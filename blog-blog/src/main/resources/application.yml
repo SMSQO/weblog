@@ -1,0 +1,15 @@
+spring:
+  security:
+    user:
+      name: root
+      password: 123456
+      roles: admin
+
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/weblog?severTimezone=GMT%2B8@useSLL=true
+    username: root
+    password: 123456
+
+mybatis:
+  mapper-locations: classpath:/mapper/*.xml

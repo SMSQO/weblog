@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.weblog.persistence.BloggerMapper">
+    <select id="queryOne" resultType="com.weblog.business.BloggerInfo">
+        SELECT * FROM blogger WHERE id = 1;
+    </select>
+
+    <!--
+        这个例子中的数据库是这样创建的:
+
+            CREATE DATABASE weblog;
+            USE weblog;
+
+            CREATE TABLE blogger (
+                id   BIGINT PRIMARY KEY AUTO_INCREMENT,
+                name NVARCHAR(20)
+            );
+
+            INSERT INTO blogger(id, name) VALUES (1, "Haresora");
+
+        使用同样的数据库名, 但数据库的具体细节请自己设计.
+    -->
+</mapper>
