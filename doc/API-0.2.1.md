@@ -31,7 +31,8 @@ type PostInfo = {
     id:         long
 
     title:      string
-    content:    string
+    content:    string			// 帖子的简介
+    detail:     URL 			// 帖子的具体内容
 
     author:     BloggerInfo 
     tags:       TagInfo[]
@@ -68,18 +69,18 @@ type AttachmentInfo = {
     name:           string  // 文件名
     url:            URL
     owner:          BloggerInfo
-    filesize:       int     // 以B为单位
+    filesize:       long     // 以B为单位
 }
 ```
 在下面的表格中, 会提到返回值. 但它不是直接返回的. 而是下面的类型(伪码):
 ```typescript
-type Result<T> = { code: int } & ({} | {content: T} | { reason: string })
+type Result<T> = { code: int } & ({content: T} | { reason: string })
 ```
 如, 如果返回值类型是long, 那一次成功请求的返回值可能是:
 ```json
 {
     "code": 0,  // 0表示此次返回没有问题. 这是在数据中的, 不是"404", "500"这种错误码 
-    "content": 114514
+    "content": 6308
 }
 ```
 或者, 有些请求没有返回值, 那它可能长这样(成功时): `{ "code": 0 }`
@@ -91,8 +92,14 @@ type Result<T> = { code: int } & ({} | {content: T} | { reason: string })
     "reason": "user not found"
 }
 ```
-> 错误码的原因应该额外定义. 比如1表示未找到用户, 2表示用户未登录等等...但我还没来得及写在文档里...
-> 之后再补充吧. 
+| 错误码 | 原因           |
+| ------ | -------------- |
+| 1      | 未登录         |
+| 2      | 没有访问权限   |
+| 3      | 查询对象不存在 |
+| 4      | 注册/登录失败  |
+
+
 
 ## 1. 登录注册
 
@@ -116,7 +123,8 @@ type Result<T> = { code: int } & ({} | {content: T} | { reason: string })
 > 2. 方便归类. 像标签,附件等功能归给**博主**, 博文等归给**博客**.
 
 | 方法  | 接口             | 参数                    | 返回        | 描述                           |
-|-------|------------------|-------------------------|-------------|--------------------------------|
+| ----- | ---------------- | ----------------------- | ----------- | ------------------------------ |
+| GET   | /blogger/self    | -                       | BloggerInfo | 查询当前登录用户的个人简介     |
 | GET   | /blogger/{uid}   | -                       | BloggerInfo | 查询个人简介(不包括博客的信息) |
 | PATCH | /blogger/{uid}   | info: BloggerInfo       | -           | 修改个人简介                   |
 | GET   | /blog/{bid}      | -                       | BlogInfo    | 查看个人博客数据               |
@@ -125,11 +133,11 @@ type Result<T> = { code: int } & ({} | {content: T} | { reason: string })
 ### 2.2 标签和附件
 
 | 方法   | 接口                            | 参数                     | 返回             | 描述             |
-|--------|---------------------------------|--------------------------|------------------|------------------|
+| ------ | ------------------------------- | ------------------------ | ---------------- | ---------------- |
 | GET    | /public/tag/                    | page: int, perpage: int  | TagInfo[]        | 查询公开标签     |
 | GET    | /blogger/{uid}/tag              | page: int, perpage: int  | TagInfo[]        | 查询某用户的标签 |
 | POST   | /blogger/{uid}/tag              | tag: TagInfo             | long             | 添加标签         |
-| POST   | /blogger/{uid}/tag/{tid}        | tag: TagInfo             | -                | 修改标签信息     |
+| PATCH  | /blogger/{uid}/tag/{tid}        | tag: TagInfo             | -                | 修改标签信息     |
 | DELETE | /blogger/{uid}/tag/{tid}        | -                        | -                | 删除标签         |
 | GET    | /blogger/{uid}/attachment       | page: int, perpage: int  | AttachmentInfo[] | 查询附件列表     |
 | POST   | /blogger/{uid}/attachment       | name: string, file: File | long             | 上传附件         |
@@ -138,36 +146,36 @@ type Result<T> = { code: int } & ({} | {content: T} | { reason: string })
 
 ## 3. 博文管理
 
-| 方法   | 接口                   | 参数                    | 返回     | 描述             |
-|--------|------------------------|-------------------------|----------|------------------|
-| GET    | /blog/{bid}/post       | page: int, perpage: int | PostInfo | 获取博客文章列表 |
-| POST   | /blog/{bid}/post       | post: PostInfo          | long     | 添加博客         |
-| PATCH  | /blog/{bid}/post/{pid} | Post: PostInfo          | -        | 修改博客         |
-| DELETE | /blog/{bid}/post/{pid} |                         | -        | 删除博客         |
+| 方法   | 接口                          | 参数           | 返回   | 描述                 |
+| ------ | ----------------------------- | -------------- | ------ | -------------------- |
+| POST   | /blog/{bid}/post              | post: PostInfo | long   | 添加博客             |
+| GET    | /blog/{bid}/post/{pid}/detail | -              | String | 返回博文详细具体内容 |
+| PATCH  | /blog/{bid}/post/{pid}        | Post: PostInfo | -      | 修改博客             |
+| DELETE | /blog/{bid}/post/{pid}        |                | -      | 删除博客             |
 
 ## 4. 评论
 
-| 方法   | 接口                                        | 参数                                  | 返回          | 描述                                             |
-|--------|---------------------------------------------|---------------------------------------|---------------|--------------------------------------------------|
-| GET    | /blog/{bid}/post/{pid}/comment              | all: boolean, page: int, perpage: int | CommentInfo[] | 返回评论列表; all设置为false时只返回未审核的评论 |
-| POST   | /blog/{bid}/post/{pid}/comment              | comment: CommentInfo, reply: long     | -             | 添加评论, reply指对另一个ID为`reply`的评论的回复 |
-| DELETE | /blog/{bid}/post/{pid}/comment/{cid}        |                                       | -             | 删除评论                                         |
-| POST   | /blog/{bid}/post/{pid}/comment/{cid}/review | pass: boolean                         | -             | 审核评论                                         |
+| 方法   | 接口                                        | 参数                                  | 返回          | 描述                                                         |
+| ------ | ------------------------------------------- | ------------------------------------- | ------------- | ------------------------------------------------------------ |
+| GET    | /blog/{bid}/post/{pid}/comment              | all: boolean, page: int, perpage: int | CommentInfo[] | 返回评论列表; all设置为false时只返回未审核的评论. 只能查出非回复的评论 |
+| POST   | /blog/{bid}/post/{pid}/comment              | comment: CommentInfo, reply: long     | -             | 添加评论, reply指对另一个ID为`reply`的评论的回复             |
+| DELETE | /blog/{bid}/post/{pid}/comment/{cid}        |                                       | -             | 删除评论                                                     |
+| GET    | /blog/{bid}/post/{pid}/comment/{cid}/reply  | page: int, perpage: int               | CommentInfo[] | 获取当前评论的所有回复                                       |
+| POST   | /blog/{bid}/post/{pid}/comment/{cid}/review | pass: boolean                         | -             | 审核评论                                                     |
 
 ## 5. 订阅
 
 | 方法 | 接口                       | 参数 | 返回    | 描述                            |
-|------|----------------------------|------|---------|---------------------------------|
+| ---- | -------------------------- | ---- | ------- | ------------------------------- |
 | POST | /blogger/{uid}/subsribe    | -    | -       | 订阅博主                        |
 | POST | /blooger/{uid}/unsubscribe | -    | -       | 取消订阅                        |
-| POST | /blogger/{uid}/subsribed   | -    | boolean | 是否关注了某博主. uid为关注者的 |
+| GET  | /blogger/{uid}/subsribed   | -    | boolean | 是否关注了某博主. uid为关注者的 |
 
 ## 6. 首页和帖子浏览详情页
 
-| 方法 | 接口                       | 参数                         | 返回       | 描述                                   |
-|------|----------------------------|------------------------------|------------|----------------------------------------|
-| POST | /public/post               | page: int, perpage: int      | PostInfo[] | 按照时间/推荐, 返回在首页展示的博文    |
-| GET  | /public/search             | tags: string[], info: string | PostInfo[] | 搜索帖子                               |
-| POST | /public/post/{pid}/like    |                              | -          | 喜欢博文                               |
-| POST | /public/post/{pid}/collect |                              | -          | 收藏博文(这个功能不完善, 暂时先不做了) | 
+| 方法 | 接口                    | 参数                         | 返回       | 描述                                |
+| ---- | ----------------------- | ---------------------------- | ---------- | ----------------------------------- |
+| POST | /public/post            | page: int, perpage: int      | PostInfo[] | 按照时间/推荐, 返回在首页展示的博文 |
+| GET  | /public/search          | tags: string[], info: string | PostInfo[] | 搜索帖子                            |
+| POST | /public/post/{pid}/like |                              | -          | 喜欢博文                            |
 
