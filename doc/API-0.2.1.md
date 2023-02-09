@@ -94,6 +94,8 @@ type Result<T> = { code: int } & ({content: T} | { reason: string })
 ```
 | 错误码 | 原因           |
 | ------ | -------------- |
+| -1     | 未知错误       |
+| 0      | 访问成功       |
 | 1      | 未登录         |
 | 2      | 没有访问权限   |
 | 3      | 查询对象不存在 |
@@ -136,10 +138,12 @@ type Result<T> = { code: int } & ({content: T} | { reason: string })
 | ------ | ------------------------------- | ------------------------ | ---------------- | ---------------- |
 | GET    | /public/tag/                    | page: int, perpage: int  | TagInfo[]        | 查询公开标签     |
 | GET    | /blogger/{uid}/tag              | page: int, perpage: int  | TagInfo[]        | 查询某用户的标签 |
+| GET    | /blogger/{uid}/tag/{tid}        | -                        | TagInfo          | 获取标签信息     |
 | POST   | /blogger/{uid}/tag              | tag: TagInfo             | long             | 添加标签         |
 | PATCH  | /blogger/{uid}/tag/{tid}        | tag: TagInfo             | -                | 修改标签信息     |
 | DELETE | /blogger/{uid}/tag/{tid}        | -                        | -                | 删除标签         |
 | GET    | /blogger/{uid}/attachment       | page: int, perpage: int  | AttachmentInfo[] | 查询附件列表     |
+| GET    | /blogger/{uid}/attachment/{aid} | -                        | AttachmentInfo   | 获取附件信息     |
 | POST   | /blogger/{uid}/attachment       | name: string, file: File | long             | 上传附件         |
 | DELETE | /blogger/{uid}/attachment/{aid} | -                        | -                | 删除附件         |
 
