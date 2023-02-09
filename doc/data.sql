@@ -18,7 +18,7 @@ VALUES ('java', NULL, 'desc-java'),
        ('Go', 1, 'Go-desc'),
        ('docker', 2, 'docker-desc');
 
-INSERT INTO attachment(`name`, url, `owner`, filesize)
-VALUES ('合金压缩包', '/attachment/blogger/0/5ZCI6YeR5Y6L57yp5YyFCg.tar.gz', 1, 1024),
-       ('纳米压缩包', '/attachment/blogger/0/5ZCI6YeR5Y6L57yp5YyFCh.tar.gz', 1, 2048),
-       ('量子压缩包', '/attachment/blogger/0/5ZCI6YeR5Y6L57yp5YyFCi.tar.gz', 2, 4096);
+INSERT INTO attachment(`name`, suffix, url, `owner`, filesize)
+VALUES ('合金压缩包', 'gz', '/attachment/blogger/0/5ZCI6YeR5Y6L57yp5YyFCg.tar.gz', 1, 1024),
+       ('纳米压缩包', 'gz', '/attachment/blogger/0/5ZCI6YeR5Y6L57yp5YyFCh.tar.gz', 1, 2048),
+       ('量子压缩包', 'gz', '/attachment/blogger/0/5ZCI6YeR5Y6L57yp5YyFCi.tar.gz', 2, 4096);

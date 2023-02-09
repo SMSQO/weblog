@@ -67,6 +67,7 @@ type CommentInfo = {
 type AttachmentInfo = {
     id:             long
     name:           string  // 文件名
+    suffix:			string	// 文件后缀名
     url:            URL
     owner:          BloggerInfo
     filesize:       long     // 以B为单位

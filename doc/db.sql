@@ -48,6 +48,7 @@ DROP TABLE IF EXISTS attachment;
 CREATE TABLE attachment (
     id       BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
     `name`   VARCHAR(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+    `suffix` VARCHAR(16) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
     url      VARCHAR(300) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
     `owner`  BIGINT(20)          NOT NULL,
     filesize BIGINT(20)          NOT NULL,
