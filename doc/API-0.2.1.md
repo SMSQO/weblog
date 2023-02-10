@@ -67,6 +67,7 @@ type CommentInfo = {
 type AttachmentInfo = {
     id:             long
     name:           string  // 文件名
+    suffix:			string	// 文件后缀名
     url:            URL
     owner:          BloggerInfo
     filesize:       long     // 以B为单位
@@ -79,21 +80,25 @@ type Result<T> = { code: int } & ({content: T} | { reason: string })
 如, 如果返回值类型是long, 那一次成功请求的返回值可能是:
 ```json
 {
-    "code": 0,  // 0表示此次返回没有问题. 这是在数据中的, 不是"404", "500"这种错误码 
+    "code": 0,  
     "content": 6308
 }
 ```
+> 0表示此次返回没有问题. 这是在数据中的, 不是"404", "500"这种错误码 
+
 或者, 有些请求没有返回值, 那它可能长这样(成功时): `{ "code": 0 }`
 
 一次失败的请求可能是这样的:
 ```json
 {
-    "code": 1,      // 只要不是0, 就表示此次请求失败. 
+    "code": 1,
     "reason": "user not found"
 }
 ```
 | 错误码 | 原因           |
 | ------ | -------------- |
+| -1     | 未知错误       |
+| 0      | 访问成功       |
 | 1      | 未登录         |
 | 2      | 没有访问权限   |
 | 3      | 查询对象不存在 |
@@ -136,22 +141,25 @@ type Result<T> = { code: int } & ({content: T} | { reason: string })
 | ------ | ------------------------------- | ------------------------ | ---------------- | ---------------- |
 | GET    | /public/tag/                    | page: int, perpage: int  | TagInfo[]        | 查询公开标签     |
 | GET    | /blogger/{uid}/tag              | page: int, perpage: int  | TagInfo[]        | 查询某用户的标签 |
+| GET    | /blogger/{uid}/tag/{tid}        | -                        | TagInfo          | 获取标签信息     |
 | POST   | /blogger/{uid}/tag              | tag: TagInfo             | long             | 添加标签         |
 | PATCH  | /blogger/{uid}/tag/{tid}        | tag: TagInfo             | -                | 修改标签信息     |
 | DELETE | /blogger/{uid}/tag/{tid}        | -                        | -                | 删除标签         |
 | GET    | /blogger/{uid}/attachment       | page: int, perpage: int  | AttachmentInfo[] | 查询附件列表     |
+| GET    | /blogger/{uid}/attachment/{aid} | -                        | AttachmentInfo   | 获取附件信息     |
 | POST   | /blogger/{uid}/attachment       | name: string, file: File | long             | 上传附件         |
 | DELETE | /blogger/{uid}/attachment/{aid} | -                        | -                | 删除附件         |
 
-
 ## 3. 博文管理
 
-| 方法   | 接口                          | 参数           | 返回   | 描述                 |
-| ------ | ----------------------------- | -------------- | ------ | -------------------- |
-| POST   | /blog/{bid}/post              | post: PostInfo | long   | 添加博客             |
-| GET    | /blog/{bid}/post/{pid}/detail | -              | String | 返回博文详细具体内容 |
-| PATCH  | /blog/{bid}/post/{pid}        | Post: PostInfo | -      | 修改博客             |
-| DELETE | /blog/{bid}/post/{pid}        |                | -      | 删除博客             |
+| 方法   | 接口                          | 参数           | 返回     | 描述                 |
+| ------ | ----------------------------- | -------------- | -------- | -------------------- |
+| POST   | /blog/{bid}/post              | post: PostInfo | long     | 添加博客             |
+| GET    | /blog/{bid}/post/{pid}        |                | PostInfo | 获取某博文           |
+| GET    | /blog/{bid}/post/{pid}/detail | -              | String   | 返回博文详细具体内容 |
+| PATCH  | /blog/{bid}/post/{pid}        | post: PostInfo | -        | 修改博客             |
+| PATCH  | /blog/{bid}/post/{pid}/detail | detail: String | -        | 修改博文详细具体内容 |
+| DELETE | /blog/{bid}/post/{pid}        |                | -        | 删除博客             |
 
 ## 4. 评论
 
