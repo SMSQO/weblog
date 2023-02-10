@@ -7,5 +7,5 @@ public interface BlogService {
 
     BlogInfo getBlogInfo(long bid);
 
-    PostInfo[] getBlogAllPost(int page, int pageSize);
+    PostInfo[] getBlogAllPost(long bid, int page, int pageSize);
 }

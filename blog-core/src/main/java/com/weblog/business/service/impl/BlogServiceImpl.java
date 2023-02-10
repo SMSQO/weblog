@@ -15,7 +15,7 @@ public class BlogServiceImpl implements BlogService {
     }
 
     @Override
-    public PostInfo[] getBlogAllPost(int page, int pageSize) {
+    public PostInfo[] getBlogAllPost(long bid, int page, int pageSize) {
         return new PostInfo[0];
     }
 }
