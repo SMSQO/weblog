@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.weblog.persistence.mapper.AttachmentMapper">
+
+    <resultMap id="attachmentInfo" type="com.weblog.business.entity.AttachmentInfo" autoMapping="true">
+        <id property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="suffix" column="suffix"/>
+        <result property="url" column="url"/>
+        <result property="filesize" column="filesize"/>
+        <association property="owner" javaType="com.weblog.business.entity.BloggerInfo"
+                     autoMapping="true"
+                     column="owner"
+                     select="com.weblog.persistence.mapper.BloggerMapper.getBloggerById">
+            <id property="id" column="owner"/>
+        </association>
+    </resultMap>
+
+    <insert id="addAttachmentInfo" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO attachment(name, suffix, url, owner, filesize)
+        VALUES (#{name}, #{suffix}, #{url}, #{owner.id}, #{filesize})
+    </insert>
+    <delete id="deleteAttachmentInfo">
+        DELETE
+        FROM attachment
+        WHERE id = #{aid}
+    </delete>
+
+    <select id="getBloggerAttachment" resultMap="attachmentInfo">
+        select id, name, suffix, url, owner, filesize
+        FROM attachment
+        WHERE owner = #{uid}
+        LIMIT #{from}, #{count}
+    </select>
+    <select id="getAttachmentInfo" resultMap="attachmentInfo">
+        SELECT id, name, suffix, url, owner, filesize
+        FROM attachment
+        WHERE id = #{tid}
+    </select>
+
+</mapper>
