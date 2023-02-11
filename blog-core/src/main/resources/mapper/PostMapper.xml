@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.weblog.persistence.mapper.PostMapper">
+
+    <resultMap id="postInfo" type="com.weblog.business.entity.PostInfo" autoMapping="true">
+        <id property="id" column="id"/>
+        <result property="title" column="title"/>
+        <result property="detail" column="detail"/>
+        <result property="avatar" column="avatar"/>
+        <result property="visits" column="visits"/>
+        <result property="likes" column="likes"/>
+
+        <result property="comments" column="comments"/>
+        <result property="unreviewedCount" column="unreviewedCount"/>
+
+        <association property="blogger" javaType="com.weblog.business.entity.BloggerInfo"
+                     autoMapping="true"
+                     column="author"
+                     select="com.weblog.persistence.mapper.BloggerMapper.getBloggerById">
+            <id property="id" column="author"/>
+        </association>
+        <association property="permission" javaType="com.weblog.business.entity.PostInfo$PostPermission"
+                     autoMapping="true"
+                     column="id"
+                     select="com.weblog.persistence.mapper.PostMapper.getPostPermission">
+        </association>
+
+        <collection property="tags" column="id"
+                    autoMapping="true"
+                    javaType="java.util.List"
+                    select="com.weblog.persistence.mapper.PostMapper.getPostTags">
+        </collection>
+    </resultMap>
+    <resultMap id="tagInfo" type="com.weblog.business.entity.TagInfo" autoMapping="true">
+        <id property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="description" column="description"/>
+        <association property="owner" javaType="com.weblog.business.entity.BloggerInfo"
+                     autoMapping="true"
+                     column="owner"
+                     select="com.weblog.persistence.mapper.BloggerMapper.getBloggerById">
+            <id property="id" column="owner"/>
+        </association>
+    </resultMap>
+
+    <insert id="addPost" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO post(title, content, detail, author, avatar, visits, likes, is_public, need_review_comment)
+            VALUE (#{title}, #{content}, '', #{blogger.id}, #{avatar}, 0, 0, FALSE, TRUE)
+    </insert>
+    <update id="updatePostInfo">
+        UPDATE post
+        <set>
+            <if test="title != null">title = #{title},</if>
+            <if test="content != null">content = #{content},</if>
+            <if test="blogger != null">author = #{blogger.id},</if>
+            <if test="avatar != null">avatar = #{avatar},</if>
+            <if test="permission != null">
+                <if test="permission.public != null">is_public = #{permission.public},</if>
+                <if test="permission.needReviewComment != null">need_review_comment = #{permission.needReviewComment},
+                </if>
+            </if>
+        </set>
+        WHERE id = #{id}
+    </update>
+    <update id="updatePostTags">
+        DELETE
+        FROM post_tag
+        WHERE post_id = #{pid};
+
+        insert into post_tag(post_id, tag_id) values
+        <foreach collection="tags" item="it" separator=",">
+            (#{pid}, #{it.id})
+        </foreach>
+    </update>
+    <update id="updatePostDetail">
+        UPDATE post
+        SET detail = #{detail}
+        WHERE id = #{pid}
+    </update>
+    <update id="updateAddPostLike">
+        UPDATE post
+        SET likes = likes + #{likes}
+        WHERE id = #{pid}
+    </update>
+    <update id="updateAddPostView">
+        UPDATE post
+        SET visits = visits + #{views}
+        WHERE id = #{pid}
+    </update>
+    <delete id="deletePost">
+        DELETE
+        FROM post_tag
+        WHERE post_id = #{pid};
+
+        DELETE
+        FROM post
+        WHERE id = #{pid}
+    </delete>
+
+    <sql id="postInfoColumn">
+        SELECT id,
+               title,
+               content,
+               detail,
+               author,
+               avatar,
+               visits,
+               likes,
+               0 AS unreviewdCount
+        FROM post
+    </sql>
+    <select id="getBloggerPostInfo" resultMap="postInfo">
+        <include refid="postInfoColumn"/>
+        WHERE author = #{uid}
+    </select>
+    <select id="getPostTags" resultMap="tagInfo">
+        SELECT tag.id AS id, name, owner, description
+        FROM tag,
+             post_tag
+        WHERE tag.id = post_tag.tag_id
+          AND post_tag.post_id = #{pid}
+    </select>
+    <select id="getPostPermission" resultType="com.weblog.business.entity.PostInfo$PostPermission">
+        SELECT is_public AS public, need_review_comment
+        FROM post
+        WHERE id = #{pid}
+    </select>
+    <select id="getPostInfo" resultMap="postInfo">
+        <include refid="postInfoColumn"/>
+        where id = #{pid}
+    </select>
+    <select id="getPostDetail" resultType="java.lang.String">
+        SELECT detail
+        FROM post
+        WHERE id = #{pid}
+    </select>
+</mapper>
