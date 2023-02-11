@@ -9,6 +9,8 @@ public interface BloggerService {
 
     BloggerInfo getSelfBloggerInfo();
 
+    long getSelfBloggerId();
+
     void updateBloggerInfo(BloggerInfo bloggerinfo) throws EntityNotFoundException;
 
 }

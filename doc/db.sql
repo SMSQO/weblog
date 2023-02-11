@@ -94,4 +94,14 @@ CREATE TABLE post_tag (
   COLLATE = utf8mb4_unicode_ci
   ROW_FORMAT = COMPACT;
 
+DROP TABLE IF EXISTS subscribe;
+CREATE TABLE subscribe (
+    publisher BIGINT(20) UNSIGNED NOT NULL,
+    fan       BIGINT(20) UNSIGNED NOT NULL,
+
+    PRIMARY KEY (publisher, fan),
+    INDEX i_publisher (publisher),
+    INDEX i_fan (fan)
+);
+
 SET FOREIGN_KEY_CHECKS = 1;

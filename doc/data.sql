@@ -44,3 +44,6 @@ VALUES (1, 1),
        (5, 3),
        (5, 4),
        (6, 6);
+
+INSERT INTO subscribe(publisher, fan)
+VALUES (2, 1);

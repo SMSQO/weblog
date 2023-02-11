@@ -4,6 +4,7 @@ import com.weblog.business.entity.BloggerInfo;
 import com.weblog.business.exception.EntityNotFoundException;
 import com.weblog.business.service.BloggerService;
 import com.weblog.persistence.mapper.BloggerMapper;
+import lombok.val;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,7 +21,14 @@ public class BloggerServiceImpl implements BloggerService {
 
     @Override
     public BloggerInfo getSelfBloggerInfo() {
-        return null; // TODO NOT FINISHED YET
+        val blogger = new BloggerInfo();
+        blogger.setId(1);
+        return blogger; // TODO JUST FOR TESTING
+    }
+
+    @Override
+    public long getSelfBloggerId() {
+        return 1; // TODO MOCK
     }
 
     @Override
