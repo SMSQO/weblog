@@ -3,6 +3,10 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.weblog.persistence.mapper.BloggerMapper">
+    <insert id="addBloggerInfo" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO blogger (`name`, contact, `password`, email, graduate)
+        VALUES (#{name}, #{contact}, #{password}, #{email}, #{graduate})
+    </insert>
 
     <select id="getBloggerById" resultType="com.weblog.business.entity.BloggerInfo">
         SELECT id,
@@ -13,6 +17,12 @@
                graduate
         FROM blogger
         WHERE id = #{id}
+    </select>
+    <select id="getBloggerByContactAndPassword" resultType="com.weblog.business.entity.BloggerInfo">
+        SELECT id, `name`, '' AS avatarUrl, contact, email, graduate
+        FROM blogger
+        WHERE contact = #{contact}
+          AND `password` = #{password}
     </select>
 
     <update id="updateBloggerInfo">

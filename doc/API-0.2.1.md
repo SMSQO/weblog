@@ -108,10 +108,10 @@ type Result<T> = { code: int } & ({content: T} | { reason: string })
 
 ## 1. 登录注册
 
-| 方法 | 接口      | 参数                                                           | 返回 | 描述 |
-|------|-----------|----------------------------------------------------------------|------|------|
-| POST | /register | name: string, password: string, contact: string, email: string | -    | 注册 |
-| POST | /login    | contact: string, password: string                              | -    | 登录 |
+| 方法 | 接口      | 参数                                                         | 返回 | 描述 |
+| ---- | --------- | ------------------------------------------------------------ | ---- | ---- |
+| POST | /register | name: string, password: string, contact: string, email: string | long | 注册 |
+| POST | /login    | contact: string, password: string                            | -    | 登录 |
 
 ## 2. 博客管理
 

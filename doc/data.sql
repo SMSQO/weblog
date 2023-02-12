@@ -1,7 +1,7 @@
 USE weblog;
-INSERT INTO blogger(`name`, contact, email, graduate)
-VALUES ('UmiKaiyo', '15001234567', 'test@163.com', 'XX大学'),
-       ('HareSora', '15001234567', 'test@163.com', 'XX大学');
+INSERT INTO blogger(`name`, contact, `password`, email, graduate)
+VALUES ('UmiKaiyo', '15000000001', 'password_1', 'test@163.com', 'XX大学'),
+       ('HareSora', '15000000002', 'password_2', 'test@163.com', 'XX大学');
 
 INSERT INTO blog(`blogger_id`, visit_count, like_count)
 VALUES (1, 0, 0),
