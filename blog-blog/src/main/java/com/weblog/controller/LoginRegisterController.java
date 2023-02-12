@@ -14,8 +14,13 @@ public class LoginRegisterController {
     private BloggerService bloggerService;
 
     @PostMapping("/login")
-    public void login(String contact, String password) throws LoginRegisterException {
-        bloggerService.loginBlogger(contact, password);
+    public long login(String contact, String password) throws LoginRegisterException {
+        return bloggerService.loginBlogger(contact, password);
+    }
+
+    @PostMapping("/logout")
+    public void logout() throws LoginRegisterException {
+        bloggerService.logoutBlogger();
     }
 
     @PostMapping("/register")

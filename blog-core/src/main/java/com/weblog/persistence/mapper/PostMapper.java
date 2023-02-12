@@ -11,7 +11,9 @@ import java.util.List;
 @Repository
 public interface PostMapper {
 
-    PostInfo[] getBloggerPostInfo(long uid, int start, int count);
+    PostInfo[] getBloggerAllPostInfo(long uid, int start, int count);
+
+    PostInfo[] getBloggerPublicPostInfo(long uid, int start, int count);
 
     TagInfo[] getPostTags(long pid);
 

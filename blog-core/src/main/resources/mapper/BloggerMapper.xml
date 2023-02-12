@@ -27,10 +27,12 @@
 
     <update id="updateBloggerInfo">
         UPDATE blogger
-        SET `name`   = #{name},
-            contact  = #{contact},
-            email    = #{email},
-            graduate = #{graduate}
+        <set>
+            <if test="name != null">`name` = #{name},</if>
+            <if test="contact != null">contact = #{contact},</if>
+            <if test="email != null">email = #{email},</if>
+            <if test="graduate != null">graduate = #{graduate},</if>
+        </set>
         WHERE id = #{id}
     </update>
 </mapper>

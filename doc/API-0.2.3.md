@@ -95,14 +95,15 @@ type Result<T> = { code: int } & ({content: T} | { reason: string })
     "reason": "user not found"
 }
 ```
-| 错误码 | 原因           |
-| ------ | -------------- |
-| -1     | 未知错误       |
-| 0      | 访问成功       |
-| 1      | 未登录         |
-| 2      | 没有访问权限   |
-| 3      | 查询对象不存在 |
-| 4      | 注册/登录失败  |
+| 错误码 | 原因                       |
+| ------ | -------------------------- |
+| -1     | 未知错误                   |
+| 0      | 访问成功                   |
+| 1      | 未登录                     |
+| 2      | 没有访问权限               |
+| 3      | 查询对象不存在             |
+| 4      | 注册/登录失败              |
+| 5      | 与别人的联系方式(电话)重复 |
 
 
 
@@ -111,7 +112,8 @@ type Result<T> = { code: int } & ({content: T} | { reason: string })
 | 方法 | 接口      | 参数                                                         | 返回 | 描述 |
 | ---- | --------- | ------------------------------------------------------------ | ---- | ---- |
 | POST | /register | name: string, password: string, contact: string, email: string | long | 注册 |
-| POST | /login    | contact: string, password: string                            | -    | 登录 |
+| POST | /login    | contact: string, password: string                            | long | 登录 |
+| POST | /logout   | -                                                            | -    | 登出 |
 
 ## 2. 博客管理
 

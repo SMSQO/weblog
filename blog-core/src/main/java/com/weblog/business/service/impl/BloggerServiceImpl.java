@@ -3,11 +3,12 @@ package com.weblog.business.service.impl;
 import com.weblog.business.entity.BloggerInfo;
 import com.weblog.business.exception.EntityNotFoundException;
 import com.weblog.business.exception.LoginRegisterException;
-import com.weblog.business.exception.NotLoggedInException;
+import com.weblog.business.exception.SameContactException;
 import com.weblog.business.service.BloggerService;
 import com.weblog.persistence.mapper.BloggerMapper;
 import lombok.val;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 
@@ -30,22 +31,13 @@ public class BloggerServiceImpl implements BloggerService {
     }
 
     @Override
-    public BloggerInfo getSelfBloggerInfo() throws NotLoggedInException {
-        val blogger = (BloggerInfo) request.getSession().getAttribute(BLOGGER_KEY);
-        if (blogger == null) {
-            throw new NotLoggedInException();
+    public void updateBloggerInfo(BloggerInfo info) throws EntityNotFoundException, SameContactException {
+        final int ret;
+        try {
+            ret = bloggerMapper.updateBloggerInfo(info);
+        } catch (DataIntegrityViolationException e) {
+            throw new SameContactException(String.format("Someone else has the same concat: %s", info.getContact()));
         }
-        return blogger;
-    }
-
-    @Override
-    public long getSelfBloggerId() throws NotLoggedInException {
-        return getSelfBloggerInfo().getId();
-    }
-
-    @Override
-    public void updateBloggerInfo(BloggerInfo info) throws EntityNotFoundException {
-        final int ret = bloggerMapper.updateBloggerInfo(info);
         if (ret != 1) {
             throw new EntityNotFoundException(String.format("blogger with id %d not found", info.getId()));
         }
@@ -62,11 +54,20 @@ public class BloggerServiceImpl implements BloggerService {
     }
 
     @Override
-    public void loginBlogger(String contact, String password) throws LoginRegisterException {
+    public long loginBlogger(String contact, String password) throws LoginRegisterException {
         val blogger = bloggerMapper.getBloggerByContactAndPassword(contact, password);
         if (blogger == null) {
             throw new LoginRegisterException("Either contact or password wrong. Please retry.");
         }
         request.getSession().setAttribute(BLOGGER_KEY, blogger);
+        return blogger.getId();
+    }
+
+    @Override
+    public void logoutBlogger() throws LoginRegisterException {
+        if (request.getSession().getAttribute(BLOGGER_KEY) == null) {
+            throw new LoginRegisterException("Not logged in");
+        }
+        request.getSession().removeAttribute(BLOGGER_KEY);
     }
 }

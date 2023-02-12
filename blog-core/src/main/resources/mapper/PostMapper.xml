@@ -112,9 +112,14 @@
                0 AS unreviewdCount
         FROM post
     </sql>
-    <select id="getBloggerPostInfo" resultMap="postInfo">
+    <select id="getBloggerAllPostInfo" resultMap="postInfo">
         <include refid="postInfoColumn"/>
         WHERE author = #{uid}
+    </select>
+    <select id="getBloggerPublicPostInfo" resultMap="postInfo">
+        <include refid="postInfoColumn"/>
+        WHERE author = #{uid}
+        AND is_public = TRUE
     </select>
     <select id="getPostTags" resultMap="tagInfo">
         SELECT tag.id AS id, name, owner, description

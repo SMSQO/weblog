@@ -2,7 +2,7 @@ package com.weblog.controller;
 
 import com.weblog.business.exception.EntityNotFoundException;
 import com.weblog.business.exception.NotLoggedInException;
-import com.weblog.business.service.BloggerService;
+import com.weblog.business.service.PermissionService;
 import com.weblog.business.service.SubscribeService;
 import lombok.val;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,16 +13,17 @@ import org.springframework.web.bind.annotation.*;
 public class SubscribeController {
 
     @Autowired
-    private BloggerService bloggerService;
+    private PermissionService permissionService;
 
     @Autowired
     private SubscribeService subscribeService;
+
 
     @PostMapping("/subscribe")
     public void subscribe(
             @PathVariable("uid") long publisher
     ) throws EntityNotFoundException, NotLoggedInException {
-        val fan = bloggerService.getSelfBloggerId(); // exception will be thrown if not found.
+        val fan = permissionService.getSelfBloggerId(); // exception will be thrown if not found.
         subscribeService.subscribe(publisher, fan);
     }
 
@@ -30,7 +31,7 @@ public class SubscribeController {
     public void unsubscribe(
             @PathVariable("uid") long publisher
     ) throws EntityNotFoundException, NotLoggedInException {
-        val fan = bloggerService.getSelfBloggerId();
+        val fan = permissionService.getSelfBloggerId();
         subscribeService.unsubscribe(publisher, fan);
     }
 
@@ -38,8 +39,7 @@ public class SubscribeController {
     public boolean subscribed(
             @PathVariable("uid") long publisher
     ) throws NotLoggedInException {
-        val fan = bloggerService.getSelfBloggerId();
+        val fan = permissionService.getSelfBloggerId();
         return subscribeService.subscribed(publisher, fan);
     }
-
 }
