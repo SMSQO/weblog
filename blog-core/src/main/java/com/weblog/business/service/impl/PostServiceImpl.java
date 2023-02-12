@@ -61,8 +61,17 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public PostInfo[] getBloggerPosts(long uid, int page, int pageSize) {
-        val postList = postMapper.getBloggerPostInfo(uid, page * pageSize, pageSize);
+    public PostInfo[] getBloggerAllPosts(long uid, int page, int pageSize) {
+        val postList = postMapper.getBloggerAllPostInfo(uid, page * pageSize, pageSize);
+        for (val it : postList) {
+            padPostInfo(it);
+        }
+        return postList;
+    }
+
+    @Override
+    public PostInfo[] getBloggerPublicPosts(long uid, int page, int pageSize) {
+        val postList = postMapper.getBloggerPublicPostInfo(uid, page, pageSize);
         for (val it : postList) {
             padPostInfo(it);
         }

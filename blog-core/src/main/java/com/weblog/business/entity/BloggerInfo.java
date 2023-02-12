@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 public class BloggerInfo {
     long id;
     String name;
+    String password;
     String avatarUrl; // URL
     String contact;
     String email;

@@ -3,6 +3,9 @@ package com.weblog.controller;
 import com.weblog.business.entity.BloggerInfo;
 import com.weblog.business.entity.PostInfo;
 import com.weblog.business.exception.EntityNotFoundException;
+import com.weblog.business.exception.NotLoggedInException;
+import com.weblog.business.exception.PermissionDeniedException;
+import com.weblog.business.service.PermissionService;
 import com.weblog.business.service.PostService;
 import lombok.extern.log4j.Log4j2;
 import lombok.val;
@@ -17,11 +20,15 @@ public class PostController {
     @Autowired
     private PostService postService;
 
+    @Autowired
+    private PermissionService permissionService;
+
     @PostMapping
     public long addPost(
             @PathVariable("bid") long uid,
             @RequestBody PostInfo post
-    ) {
+    ) throws PermissionDeniedException, NotLoggedInException {
+        permissionService.assertIsSelfBlogger(uid);
         return postService.addPost(uid, post);
     }
 
@@ -32,14 +39,23 @@ public class PostController {
             int page,
             @RequestParam("perpage") int pageSize
     ) {
-        return postService.getBloggerPosts(uid, page, pageSize);
+        try {
+            val sid = permissionService.getSelfBloggerId();
+            if (sid == uid) {
+                return postService.getBloggerAllPosts(uid, page, pageSize);
+            }
+        } catch (NotLoggedInException ignored) {
+        }
+        return postService.getBloggerPublicPosts(uid, page, pageSize);
     }
+
 
     @GetMapping("/{pid}")
     public PostInfo getPostInfo(
             @PathVariable("bid") long uid,
             @PathVariable("pid") long pid
-    ) throws EntityNotFoundException {
+    ) throws EntityNotFoundException, PermissionDeniedException, NotLoggedInException {
+        permissionService.assertIsPostAvailable(pid);
         return postService.getPostInfo(pid);
     }
 
@@ -47,7 +63,8 @@ public class PostController {
     public String getPostDetail(
             @PathVariable("bid") long uid,
             @PathVariable("pid") long pid
-    ) throws EntityNotFoundException {
+    ) throws EntityNotFoundException, PermissionDeniedException, NotLoggedInException {
+        permissionService.assertIsPostAvailable(pid);
         return postService.getPostDetail(pid);
     }
 
@@ -56,12 +73,13 @@ public class PostController {
             @PathVariable("bid") long uid,
             @PathVariable("pid") long pid,
             @RequestBody PostInfo post
-    ) throws EntityNotFoundException {
+    ) throws EntityNotFoundException, PermissionDeniedException, NotLoggedInException {
         if (post.getBlogger() == null) {
             val blogger = new BloggerInfo();
             blogger.setId(uid);
             post.setBlogger(blogger);
         }
+        permissionService.assertIsSelfBlogger(uid);
         post.setId(pid);
         postService.updatePostInfo(post);
     }
@@ -71,9 +89,8 @@ public class PostController {
             @PathVariable("bid") long uid,
             @PathVariable("pid") long pid,
             @RequestBody String detail
-    ) throws EntityNotFoundException {
-        log.info("OK, modifying details.");
-        log.info(String.format("DETAIL = %s", detail));
+    ) throws EntityNotFoundException, PermissionDeniedException, NotLoggedInException {
+        permissionService.assertIsSelfPost(pid);
         postService.updatePostDetail(pid, detail);
     }
 
@@ -81,24 +98,8 @@ public class PostController {
     public void deletePost(
             @PathVariable("bid") long uid,
             @PathVariable("pid") long pid
-    ) throws EntityNotFoundException {
+    ) throws EntityNotFoundException, PermissionDeniedException, NotLoggedInException {
+        permissionService.assertIsSelfPost(pid);
         postService.deletePost(pid);
-    }
-
-    @PostMapping("/test")
-    public void test(
-            @PathVariable("bid") long uid,
-            @RequestBody String detail
-    ) {
-        log.info(String.format("detail = %s", detail));
-    }
-
-
-    @PatchMapping("/test")
-    public void test2(
-            @PathVariable("bid") long uid,
-            @RequestBody String detail
-    ) {
-        log.info(String.format("detail = %s", detail));
     }
 }

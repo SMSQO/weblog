@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.weblog.persistence.mapper.PermissionMapper">
+
+    <select id="checkTagOwner" resultType="java.lang.Boolean">
+        SELECT owner = #{uid}
+        FROM tag
+        WHERE id = #{tid}
+    </select>
+    <select id="checkAttachmentOwner" resultType="java.lang.Boolean">
+        SELECT owner = #{uid}
+        FROM attachment
+        WHERE id = #{aid}
+    </select>
+    <select id="checkPostAuthor" resultType="java.lang.Boolean">
+        SELECT author = #{uid}
+        FROM post
+        WHERE id = #{pid}
+    </select>
+    <select id="checkPostPublic" resultType="java.lang.Boolean">
+        SELECT is_public
+        FROM post
+        WHERE id = #{pid}
+    </select>
+</mapper>

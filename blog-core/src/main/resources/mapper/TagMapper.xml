@@ -23,9 +23,11 @@
     </insert>
     <update id="updateTag">
         UPDATE tag
-        SET name        = #{name},
-            owner       = #{owner.id},
-            description = #{description}
+        <set>
+            <if test="name != null">`name` = #{name},</if>
+            <if test="owner != null">`owner` = #{owner.id},</if>
+            <if test="description != null">`description` = #{description},</if>
+        </set>
         WHERE id = #{id}
     </update>
     <delete id="deleteTag">
