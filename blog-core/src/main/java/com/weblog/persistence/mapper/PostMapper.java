@@ -11,6 +11,15 @@ import java.util.List;
 @Repository
 public interface PostMapper {
 
+    PostInfo[] listRecommendPostInfo();
+
+    PostInfo[] getBloggerLikedPosts(long uid);
+
+    PostInfo[] searchPostsByName(String findname);
+
+
+    PostInfo[] searchPostsByNameAndTags(long tid,String findname);
+
     PostInfo[] getBloggerPostInfo(long uid, int start, int count);
 
     TagInfo[] getPostTags(long pid);
@@ -36,4 +45,5 @@ public interface PostMapper {
     int updateAddPostLike(long pid, int likes);
 
     int updateAddPostView(long pid, int views);
+
 }

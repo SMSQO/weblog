@@ -50,6 +50,44 @@
         INSERT INTO post(title, content, detail, author, avatar, visits, likes, is_public, need_review_comment)
             VALUE (#{title}, #{content}, '', #{blogger.id}, #{avatar}, 0, 0, FALSE, TRUE)
     </insert>
+    <select id = "listRecommendPostInfo" resultMap="postInfo">
+        select id,title,content,detail,avatar,visits,likes,comments,unreviewedCount,author
+        from post
+        order by post.likes desc,post.posttime desc
+    </select>
+
+    <select id="getBloggerLikedPosts" resultMap="postInfo">
+        select id,title,content,detail,avatar,visits,likes,comments,unreviewedCount,author
+        from post
+        where id =(select pid from post_like where bid = #{bid})
+    </select>
+
+    <select id="searchPostsByNameAndTags" resultMap="postInfo">
+        SELECT p.id,
+               p.title,
+               p.content,
+               p.detail,
+               p.avatar,
+               p.visits,
+               p.likes,
+               p.comments,
+               p.unreviewedCount,
+               p.author
+        from post p left join (
+            select post_id
+            from post_tag pt
+            where tag_id = #{tid}
+        ) a on p.id = a.post_id
+        where p.title like "%"#{findname}"%" or
+              p.content like "%"#{findname}"%"
+    </select>
+    
+    <select id="searchPostsByName" resultMap="postInfo">
+        SELECT id,title,content,detail,avatar,visits,likes,comments,unreviewedCount,author
+        from post
+        where post.title like "%"#{findname}"%" or post.content like "%"#{findname}"%"
+    </select>
+
     <update id="updatePostInfo">
         UPDATE post
         <set>

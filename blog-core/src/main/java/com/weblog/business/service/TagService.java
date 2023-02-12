@@ -11,6 +11,7 @@ public interface TagService {
 
     TagInfo getTagInfo(long tid) throws EntityNotFoundException;
 
+
     long addTag(TagInfo tag);
 
     void updateTag(TagInfo tag) throws EntityNotFoundException;

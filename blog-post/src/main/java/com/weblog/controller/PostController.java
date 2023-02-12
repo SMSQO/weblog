@@ -22,6 +22,7 @@ public class PostController {
             @PathVariable("bid") long uid,
             @RequestBody PostInfo post
     ) {
+
         return postService.addPost(uid, post);
     }
 

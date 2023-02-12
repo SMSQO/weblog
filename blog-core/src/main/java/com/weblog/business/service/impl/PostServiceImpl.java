@@ -2,9 +2,11 @@ package com.weblog.business.service.impl;
 
 import com.weblog.business.entity.BloggerInfo;
 import com.weblog.business.entity.PostInfo;
+import com.weblog.business.entity.TagInfo;
 import com.weblog.business.exception.EntityNotFoundException;
 import com.weblog.business.service.PostService;
 import com.weblog.persistence.mapper.PostMapper;
+import com.weblog.persistence.mapper.TagMapper;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +22,37 @@ public class PostServiceImpl implements PostService {
 
     @Autowired
     private PostMapper postMapper;
+    @Autowired
+    private TagMapper tagMapper;
+
+
+    @Override
+    public PostInfo[] listRecommended() {
+        return postMapper.listRecommendPostInfo();
+    }
+
+    @Override
+    public PostInfo[] findLikedPosts(long pid) {
+        return postMapper.getBloggerLikedPosts(pid);
+    }
+
+    @Override
+    public PostInfo[] searchPosts(String tagsname,String findname) {
+        TagInfo tag = null;
+        if (tagsname != "") {
+            tag = tagMapper.getTagInfoByName(tagsname);
+            if(tag==null) return null; //没有找到合适标签
+            return postMapper.searchPostsByNameAndTags(tag.getId(), findname);
+        }
+        PostInfo[] posts=postMapper.searchPostsByName(findname);
+        if(posts==null) return null;//没有找到合适博文
+        return posts;
+    }
+
+    @Override
+    public void doPraise(int id) {
+
+    }
 
     @Override
     public long addPost(long uid, PostInfo post) {

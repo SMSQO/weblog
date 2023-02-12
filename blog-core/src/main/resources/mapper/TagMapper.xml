@@ -16,6 +16,12 @@
             <id property="id" column="owner"/>
         </association>
     </resultMap>
+    
+    <select id="getTagInfoByName" resultMap="tagInfo">
+        select id,description,owner,`name`
+        from tag
+        where `name` = #{tags}
+    </select>
 
     <insert id="addTag" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO tag(name, owner, description)

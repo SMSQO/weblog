@@ -8,6 +8,8 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface TagMapper {
 
+
+    TagInfo  getTagInfoByName(String tags);
     TagInfo[] getPublicTags(int from, int count);
 
     TagInfo[] getBloggerTags(long uid, int from, int count);
