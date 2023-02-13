@@ -6,11 +6,12 @@ SET FOREIGN_KEY_CHECKS = 0;
 
 DROP TABLE IF EXISTS blogger;
 CREATE TABLE blogger (
-    id       BIGINT(20) UNSIGNED                                           NOT NULL AUTO_INCREMENT,
-    `name`   VARCHAR(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-    contact  CHAR(15),
-    email    VARCHAR(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL,
-    graduate VARCHAR(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL,
+    id         BIGINT(20) UNSIGNED                                           NOT NULL AUTO_INCREMENT,
+    `name`     VARCHAR(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+    contact    CHAR(15) UNIQUE,
+    email      VARCHAR(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL,
+    graduate   VARCHAR(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL,
+    `password` VARCHAR(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
 
     PRIMARY KEY (id)
 ) ENGINE = InnoDB
@@ -93,5 +94,15 @@ CREATE TABLE post_tag (
   CHARACTER SET = utf8mb4
   COLLATE = utf8mb4_unicode_ci
   ROW_FORMAT = COMPACT;
+
+DROP TABLE IF EXISTS subscribe;
+CREATE TABLE subscribe (
+    publisher BIGINT(20) UNSIGNED NOT NULL,
+    fan       BIGINT(20) UNSIGNED NOT NULL,
+
+    PRIMARY KEY (publisher, fan),
+    INDEX i_publisher (publisher),
+    INDEX i_fan (fan)
+);
 
 SET FOREIGN_KEY_CHECKS = 1;

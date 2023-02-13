@@ -14,7 +14,9 @@ public interface PostService {
     void deletePost(long pid) throws EntityNotFoundException;
 
 
-    PostInfo[] getBloggerPosts(long uid, int page, int pageSize);
+    PostInfo[] getBloggerAllPosts(long uid, int page, int pageSize);
+
+    PostInfo[] getBloggerPublicPosts(long uid, int page, int pageSize);
 
     PostInfo getPostInfo(long pid) throws EntityNotFoundException;
 

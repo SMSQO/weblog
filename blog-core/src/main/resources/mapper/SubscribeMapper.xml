@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.weblog.persistence.mapper.SubscribeMapper">
+    <insert id="subscribe">
+        INSERT INTO subscribe(publisher, fan)
+            VALUE (#{publisher}, #{fan})
+    </insert>
+    <delete id="unsubscribe">
+        DELETE
+        FROM subscribe
+        WHERE publisher = #{publisher}
+          AND fan = #{fan}
+    </delete>
+    <select id="subscribed" resultType="java.lang.Boolean">
+        SELECT EXISTS(
+                       SELECT *
+                       FROM subscribe
+                       WHERE publisher = #{publisher}
+                         AND fan = #{fan})
+    </select>
+    <select id="bothBloggerExists" resultType="java.lang.Boolean">
+        SELECT COUNT(*) = 2
+        FROM blogger
+        WHERE id = #{publisher}
+           OR id = #{fan}
+    </select>
+</mapper>
