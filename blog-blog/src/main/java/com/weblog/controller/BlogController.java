@@ -33,13 +33,12 @@ public class BlogController {
         } catch (NotLoggedInException e) {
             uid = -1;
         }
-
         return blogService.getBlogInfo(bid, uid, request);
     }
 
     @GetMapping("/{bid}/post")
     @NonNull
-    public PostInfo[] getBlogAllPost(@PathVariable("bid") long bid, int page, int perpage) throws NotLoggedInException {
+    public PostInfo[] getBlogAllPost(@PathVariable("bid") long bid, int page, int perpage) {
         long uid;
         try {
             uid = permissionService.getSelfBloggerId();

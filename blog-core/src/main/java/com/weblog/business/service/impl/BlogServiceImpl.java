@@ -59,34 +59,11 @@ public class BlogServiceImpl implements BlogService {
                 blogs.add(postInfos[i]);
             }
         }
-        postInfos = null;
+        postInfos = new PostInfo[blogs.size()];
         if (blogs.size() > 0)
-            postInfos = blogs.toArray(new PostInfo[0]);
+            blogs.toArray(postInfos);
         return postInfos;
     }
 
-    @Override
-    public CommentInfo[] getCommentInfo(long bid, long pid, boolean all, int page, int pageSize) {
-        return new CommentInfo[0];
-    }
 
-    @Override
-    public void addCommentInfo(long bid, long pid, CommentInfo comment, long reply) {
-
-    }
-
-    @Override
-    public void deleteCommentInfo(long bid, long pid, long cid) throws DeleteException {
-
-    }
-
-    @Override
-    public CommentInfo[] getAllReplyComment(long bid, long pid, long cid, int page, int pageSize) {
-        return new CommentInfo[0];
-    }
-
-    @Override
-    public void reviewComment(long bid, long pid, long cid, boolean pass) throws ReviewException {
-
-    }
 }
