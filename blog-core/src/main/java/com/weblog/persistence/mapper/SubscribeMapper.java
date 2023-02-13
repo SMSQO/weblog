@@ -14,4 +14,6 @@ public interface SubscribeMapper {
     boolean subscribed(long publisher, long fan);
 
     boolean bothBloggerExists(long publisher, long fan);
+
+    int getOnesFans(long publisher);
 }

@@ -27,4 +27,9 @@
         WHERE id = #{publisher}
            OR id = #{fan}
     </select>
+    <select id="getOnesFans" resultType="java.lang.Integer">
+        SELECT COUNT(*)
+        FROM subscribe
+        WHERE publisher = #{publisher}
+    </select>
 </mapper>
