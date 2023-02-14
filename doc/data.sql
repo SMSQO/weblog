@@ -47,3 +47,11 @@ VALUES (1, 1),
 
 INSERT INTO subscribe(publisher, fan)
 VALUES (2, 1);
+
+INSERT INTO blogger_likedpost(post_id, blogger_id)
+VALUES (1, 1),
+       (1, 2),
+       (2, 3),
+       (2, 4),
+       (2, 5),
+       (2, 6)

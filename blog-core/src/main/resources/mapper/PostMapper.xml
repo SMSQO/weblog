@@ -52,7 +52,7 @@
     </insert>
 
     <insert id="addBloggerLikePost" useGeneratedKeys="true">
-        INSERT INTO blogger_likepost(blogger_id,post_id) value (#(bid),#(pid))
+        INSERT INTO blogger_likedpost(post_id,blogger_id) value (#(pid),#(bid))
     </insert>
     <select id = "listRecommendPostInfo" resultMap="postInfo">
         <include refid="postInfoColumn"/>
