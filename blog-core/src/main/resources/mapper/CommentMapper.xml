@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.weblog.persistence.mapper.CommentMapper">
+    <resultMap id="CommentInfo" type="com.weblog.business.entity.CommentInfo" autoMapping="true">
+        <id property="id" column="id"/>
+
+        <result property="content" column="content"/>
+        <result property="reviewPassed" column="reviewPassed"/>
+        <association property="author" javaType="com.weblog.business.entity.BloggerInfo"
+                     autoMapping="true"
+                     column="userId"
+                     select="com.weblog.persistence.mapper.BloggerMapper.getBloggerById">
+            <id property="id" column="userId"/>
+        </association>
+    </resultMap>
+    <select id="getCommentOnlyUnreviewed" resultMap="CommentInfo">
+        SELECT id,
+               content,
+               reviewPassed,
+               userId
+        FROM comment
+        WHERE blogId = #{id} and replyTo = -1 and reviewPassed is null
+    </select>
+    <select id="getComment" resultMap="CommentInfo">
+        SELECT id,
+               content,
+               reviewPassed,
+               userId
+        FROM comment
+        WHERE blogId = #{id} and replyTo = -1
+    </select>
+    <insert id="addComment">
+        INSERT INTO comment(blogId, userId, content, replyTo, reviewPassed)
+        VALUES (#{pid}, #{bid}, #{content}, #{replyTo}, null)
+    </insert>
+    <select id="getReplyComment" resultMap="CommentInfo">
+        SELECT id,
+               content,
+               reviewPassed,
+               userId
+        FROM comment
+        WHERE replyTo = #{id}
+    </select>
+    <update id="reviewComment">
+        update comment
+        set reviewPassed = #{pass}
+        where id = #{id}
+    </update>
+    <delete id="deleteComment">
+        DELETE
+        from comment
+        where id = #{cid}
+    </delete>
+
+</mapper>
