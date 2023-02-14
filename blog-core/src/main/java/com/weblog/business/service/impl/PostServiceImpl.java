@@ -2,13 +2,18 @@ package com.weblog.business.service.impl;
 
 import com.weblog.business.entity.BloggerInfo;
 import com.weblog.business.entity.PostInfo;
+import com.weblog.business.entity.TagInfo;
 import com.weblog.business.exception.EntityNotFoundException;
 import com.weblog.business.service.PostService;
 import com.weblog.persistence.mapper.PostMapper;
+import com.weblog.persistence.mapper.TagMapper;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.HashSet;
+import java.util.Set;
 
 
 @Slf4j
@@ -20,6 +25,63 @@ public class PostServiceImpl implements PostService {
 
     @Autowired
     private PostMapper postMapper;
+
+    @Autowired
+    private TagMapper tagMapper;
+
+    @Override
+    public PostInfo[] listRecommended(int page, int pageSize) throws EntityNotFoundException {
+        PostInfo[] posts = postMapper.listRecommendPostInfo();
+        if(posts.length==0){
+            throw new EntityNotFoundException(String.format("recommend posts not found"));        }
+        return posts;
+    }
+
+    @Override
+    public PostInfo[] findLikedPosts(long pid) throws EntityNotFoundException {
+        PostInfo[] posts = postMapper.getBloggerLikedPosts(pid);
+        if(posts.length==0){
+            throw new EntityNotFoundException(String.format("recommend posts not found"));        }
+        return posts;
+    }
+
+    @Override
+    public void likePost(long bid, long pid) {
+        postMapper.updateAddPostLike(pid,1);
+        postMapper.addBloggerLikePost(bid, pid);
+    }
+
+    @Override
+    public Set<PostInfo> searchPosts(String[] tagsname, String findname) throws EntityNotFoundException {
+//        TagInfo tag = null;
+//        if (tagsname != "") {
+//            tag = tagMapper.getTagInfoByName(tagsname);
+//            if(tag==null) return null; //没有找到合适标签
+//            return postMapper.searchPostsByNameAndTags(tag.getId(), findname);
+//        }
+//        PostInfo[] posts=postMapper.searchPostsByName(findname);
+//        if(posts==null) return null;//没有找到合适博文
+
+        Set<PostInfo>posts = new HashSet<PostInfo>();
+        for (String tagname:tagsname
+        ) {
+            TagInfo taginfo = tagMapper.getTagInfoByName(tagname);
+            if(taginfo!=null) {
+                posts.addAll(postMapper.searchPostsByTitle(taginfo.getId(), findname));
+                posts.addAll(postMapper.searchPostsByContent(taginfo.getId(), findname));
+            }
+        }
+
+        if(posts.size()==0){
+            throw new EntityNotFoundException(String.format("search posts not found"));
+        }
+
+        return posts;
+
+
+
+    }
+
 
     @Override
     public long addPost(long uid, PostInfo post) {

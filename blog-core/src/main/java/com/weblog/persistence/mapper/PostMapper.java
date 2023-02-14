@@ -11,6 +11,19 @@ import java.util.List;
 @Repository
 public interface PostMapper {
 
+    PostInfo[] listRecommendPostInfo();
+
+    PostInfo[] getBloggerLikedPosts(long uid);
+
+    List<PostInfo> searchPostsByTitle(Long tid, String findname);
+
+
+    List<PostInfo> searchPostsByContent(Long tid,String findname);
+
+    void addBloggerLikePost(long bid ,long pid);
+
+
+
     PostInfo[] getBloggerAllPostInfo(long uid, int start, int count);
 
     PostInfo[] getBloggerPublicPostInfo(long uid, int start, int count);
