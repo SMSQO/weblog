@@ -12,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
 
 @RestController
 @RequestMapping(value = "/blog")
@@ -26,14 +25,14 @@ public class BlogController {
 
     @GetMapping("/{bid}")
     @NonNull
-    public BlogInfo getBloggerInfo(HttpServletRequest request, @PathVariable("bid") long bid) throws EntityNotFoundException {
+    public BlogInfo getBloggerInfo(@PathVariable("bid") long bid) throws EntityNotFoundException {
         long uid;
         try {
             uid = permissionService.getSelfBloggerId();
         } catch (NotLoggedInException e) {
             uid = -1;
         }
-        return blogService.getBlogInfo(bid, uid, request);
+        return blogService.getBlogInfo(bid, uid);
     }
 
     @GetMapping("/{bid}/post")

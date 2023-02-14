@@ -1,11 +1,8 @@
 package com.weblog.business.service.impl;
 
 import com.weblog.business.entity.BlogInfo;
-import com.weblog.business.entity.CommentInfo;
 import com.weblog.business.entity.PostInfo;
-import com.weblog.business.exception.DeleteException;
 import com.weblog.business.exception.EntityNotFoundException;
-import com.weblog.business.exception.ReviewException;
 import com.weblog.business.service.BlogService;
 import com.weblog.persistence.mapper.BlogMapper;
 import com.weblog.persistence.mapper.PostMapper;
@@ -13,7 +10,6 @@ import com.weblog.persistence.mapper.SubscribeMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 
 // TODO getBlogInfo need to change how many blogs in one page
@@ -29,7 +25,7 @@ public class BlogServiceImpl implements BlogService {
     private PostMapper postMapper;
 
     @Override
-    public BlogInfo getBlogInfo(long bid, long uid, HttpServletRequest request) throws EntityNotFoundException {
+    public BlogInfo getBlogInfo(long bid, long uid) throws EntityNotFoundException {
         boolean selfWatch = uid == bid;
         BlogInfo blogInfo = blogMapper.getBlogById(bid);
         if (blogInfo == null)
@@ -41,7 +37,7 @@ public class BlogServiceImpl implements BlogService {
         else
             postInfos = postMapper.getBloggerPublicPostInfo(bid, 0, 0);
         blogInfo.setBlogCount(postInfos.length);
-        blogInfo.setBlogsUrl(request.getRequestURL() + "/post?page=0&perpage=5");
+        blogInfo.setBlogsUrl(String.format("/blog/%d/post?page=0&perpage=5", bid));
         return blogInfo;
     }
 
