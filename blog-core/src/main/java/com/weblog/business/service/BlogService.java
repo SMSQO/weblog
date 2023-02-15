@@ -6,9 +6,9 @@ import com.weblog.business.exception.EntityNotFoundException;
 
 public interface BlogService {
 
-    BlogInfo getBlogInfo(long bid, long uid) throws EntityNotFoundException;
+    BlogInfo getBlogInfo(long bid, boolean selfWatch) throws EntityNotFoundException;
 
-    PostInfo[] getBlogAllPost(long uid, long bid, int page, int pageSize);
+    PostInfo[] getBlogAllPost(boolean selfWatch, long bid, int page, int pageSize);
 
 
 

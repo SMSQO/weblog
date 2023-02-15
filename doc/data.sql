@@ -48,10 +48,10 @@ VALUES (1, 1),
 INSERT INTO subscribe(publisher, fan)
 VALUES (2, 1);
 
-INSERT INTO comment(blogId, userId, content, replyTo)
-VALUES (2, 1, 'dsads', -1),
+INSERT INTO comment(post_id, user_id, content, reply_to)
+VALUES (2, 1, 'dsads', null),
        (1, 3, '1!5!', 1),
        (1, 4, 'LTC!', 3),
-       (1, 1, '理塘丁真', -1),
-       (1, 3, '电子烟！', -1),
-       (1, 4, '锐克5', -1);
+       (1, 1, '理塘丁真', null),
+       (1, 3, '电子烟！', null),
+       (1, 4, '锐克5', null);

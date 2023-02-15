@@ -1,9 +1,7 @@
 package com.weblog.persistence.mapper;
 
 import com.weblog.business.entity.CommentInfo;
-import com.weblog.business.exception.DeleteException;
 import org.apache.ibatis.annotations.Mapper;
-import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Repository;
 
 @Mapper
@@ -11,19 +9,18 @@ import org.springframework.stereotype.Repository;
 public interface CommentMapper {
 
 
-    @Nullable
-    CommentInfo[] getCommentOnlyUnreviewed(long id);
+    CommentInfo[] getCommentOnlyUnreviewed(long id, int start, int count);
 
-    @Nullable
-    CommentInfo[] getComment(long id);
+    CommentInfo[] getComment(long id, int start, int count);
 
     int addComment(long pid, long bid, String content, long replyTo);
 
-    int deleteComment(long cid) throws DeleteException;
+    int deleteComment(long cid);
 
 
-    @Nullable
     CommentInfo[] getReplyComment(long replyTo);
 
     int reviewComment(long id, boolean pass);
+
+    CommentInfo getCommentById(long id);
 }

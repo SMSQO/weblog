@@ -4,19 +4,18 @@ import com.weblog.business.entity.BlogInfo;
 import com.weblog.business.entity.PostInfo;
 import com.weblog.business.exception.EntityNotFoundException;
 import com.weblog.business.exception.NotLoggedInException;
+import com.weblog.business.exception.PermissionDeniedException;
 import com.weblog.business.service.BlogService;
 import com.weblog.business.service.PermissionService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
 import org.springframework.web.bind.annotation.*;
 
-
+@Slf4j
 @RestController
 @RequestMapping(value = "/blog")
 public class BlogController {
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
     private BlogService blogService;
@@ -26,24 +25,24 @@ public class BlogController {
     @GetMapping("/{bid}")
     @NonNull
     public BlogInfo getBloggerInfo(@PathVariable("bid") long bid) throws EntityNotFoundException {
-        long uid;
+        boolean selfBlog = true;
         try {
-            uid = permissionService.getSelfBloggerId();
-        } catch (NotLoggedInException e) {
-            uid = -1;
+            permissionService.assertIsSelfBlogger(bid);
+        } catch (PermissionDeniedException | NotLoggedInException e) {
+            selfBlog = false;
         }
-        return blogService.getBlogInfo(bid, uid);
+        return blogService.getBlogInfo(bid, selfBlog);
     }
 
     @GetMapping("/{bid}/post")
     @NonNull
     public PostInfo[] getBlogAllPost(@PathVariable("bid") long bid, int page, int perpage) {
-        long uid;
+        boolean selfBlog = true;
         try {
-            uid = permissionService.getSelfBloggerId();
-        } catch (NotLoggedInException e) {
-            uid = -1;
+            permissionService.assertIsSelfBlogger(bid);
+        } catch (PermissionDeniedException | NotLoggedInException e) {
+            selfBlog = false;
         }
-        return blogService.getBlogAllPost(uid, bid, page, perpage);
+        return blogService.getBlogAllPost(selfBlog, bid, page, perpage);
     }
 }

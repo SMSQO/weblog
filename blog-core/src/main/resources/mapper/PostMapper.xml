@@ -114,12 +114,12 @@
     </sql>
     <select id="getBloggerAllPostInfo" resultMap="postInfo">
         <include refid="postInfoColumn"/>
-        WHERE author = #{uid}
+        WHERE author = #{uid} limit #{count} offset #{start}
     </select>
     <select id="getBloggerPublicPostInfo" resultMap="postInfo">
         <include refid="postInfoColumn"/>
         WHERE author = #{uid}
-        AND is_public = TRUE
+        AND is_public = TRUE  limit #{count} offset #{start}
     </select>
     <select id="getPostTags" resultMap="tagInfo">
         SELECT tag.id AS id, name, owner, description

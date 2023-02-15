@@ -1,20 +1,21 @@
 package com.weblog.controller;
 
 import com.weblog.business.entity.CommentInfo;
-import com.weblog.business.exception.*;
+import com.weblog.business.exception.EntityNotFoundException;
+import com.weblog.business.exception.NotLoggedInException;
+import com.weblog.business.exception.PermissionDeniedException;
 import com.weblog.business.service.CommentService;
 import com.weblog.business.service.PermissionService;
 import com.weblog.business.service.PostService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
 import org.springframework.web.bind.annotation.*;
 
+@Slf4j
 @RestController
 @RequestMapping(value = "/blog")
 public class CommentController {
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
     @Autowired
     private CommentService commentService;
 
@@ -26,7 +27,12 @@ public class CommentController {
 
     @GetMapping("/{bid}/post/{pid}/comment")
     @NonNull
-    public CommentInfo[] getCommentInfo(@PathVariable("bid") long bid, @PathVariable("pid") long pid, boolean all, int page, int perpage) {
+    public CommentInfo[] getCommentInfo(@PathVariable("bid") long bid, @PathVariable("pid") long pid, boolean all, int page, int perpage) throws PermissionDeniedException {
+        try {
+            permissionService.assertIsSelfBlogger(bid);
+        } catch (NotLoggedInException | PermissionDeniedException e) {
+            throw new PermissionDeniedException();
+        }
         return commentService.getCommentInfo(bid, pid, all, page, perpage);
     }
 
@@ -39,7 +45,7 @@ public class CommentController {
 
     @DeleteMapping("/{bid}/post/{pid}/comment/{cid}")
     @NonNull
-    public void deleteCommentInfo(@PathVariable("bid") long bid, @PathVariable("pid") long pid, @PathVariable("cid") long cid) throws DeleteException {
+    public void deleteCommentInfo(@PathVariable("bid") long bid, @PathVariable("pid") long pid, @PathVariable("cid") long cid) {
         commentService.deleteCommentInfo(bid, pid, cid);
     }
 
@@ -52,7 +58,7 @@ public class CommentController {
     @PostMapping("{bid}/post/{pid}/comment/{cid}/review")
     @NonNull
     public void reviewComment(@PathVariable("bid") long bid, @PathVariable("pid") long pid, @PathVariable("cid") long cid, boolean pass) throws PermissionDeniedException, EntityNotFoundException, NotLoggedInException {
-        if(permissionService.getSelfBloggerId() != postService.getPostInfo(pid).getBlogger().getId()){
+        if (permissionService.getSelfBloggerId() != postService.getPostInfo(pid).getBlogger().getId()) {
             throw new PermissionDeniedException();
         }
         commentService.reviewComment(bid, pid, cid, pass);

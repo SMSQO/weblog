@@ -7,45 +7,64 @@
         <id property="id" column="id"/>
 
         <result property="content" column="content"/>
-        <result property="reviewPassed" column="reviewPassed"/>
+        <result property="reviewPassed" column="review_passed"/>
         <association property="author" javaType="com.weblog.business.entity.BloggerInfo"
                      autoMapping="true"
-                     column="userId"
+                     column="user_id"
                      select="com.weblog.persistence.mapper.BloggerMapper.getBloggerById">
-            <id property="id" column="userId"/>
+            <id property="id" column="user_id"/>
+        </association>
+        <association property="replyTo" javaType="com.weblog.business.entity.CommentInfo"
+                     autoMapping="true"
+                     column="reply_to"
+                     select="com.weblog.persistence.mapper.CommentMapper.getCommentById">
+            <id property="id" column="reply_to"/>
         </association>
     </resultMap>
     <select id="getCommentOnlyUnreviewed" resultMap="CommentInfo">
         SELECT id,
                content,
-               reviewPassed,
-               userId
+               review_passed,
+               user_id,
+               reply_to
         FROM comment
-        WHERE blogId = #{id} and replyTo = -1 and reviewPassed is null
+        WHERE post_id = #{id} and reply_to is null and review_passed is null limit #{count} offset #{start}
+    </select>
+    <select id="getCommentById" resultMap="CommentInfo">
+        SELECT id,
+               post_id,
+               reply_to,
+               content,
+               review_passed,
+               user_id
+        FROM comment
+        WHERE id = #{id}
     </select>
     <select id="getComment" resultMap="CommentInfo">
         SELECT id,
                content,
-               reviewPassed,
-               userId
+               review_passed,
+               user_id
         FROM comment
-        WHERE blogId = #{id} and replyTo = -1
+        WHERE post_id = #{id} and reply_to is null limit #{count} offset #{start}
     </select>
     <insert id="addComment">
-        INSERT INTO comment(blogId, userId, content, replyTo, reviewPassed)
-        VALUES (#{pid}, #{bid}, #{content}, #{replyTo}, null)
+        INSERT INTO comment(post_id, user_id, content, reply_to, review_passed)
+        VALUES (#{pid}, #{bid}, #{content}, #{reply_to}, null)
     </insert>
     <select id="getReplyComment" resultMap="CommentInfo">
         SELECT id,
                content,
-               reviewPassed,
-               userId
+               review_passed,
+               user_id,
+               reply_to,
+               post_id
         FROM comment
-        WHERE replyTo = #{id}
+        WHERE reply_to = #{id}
     </select>
     <update id="reviewComment">
         update comment
-        set reviewPassed = #{pass}
+        set review_passed = #{pass}
         where id = #{id}
     </update>
     <delete id="deleteComment">

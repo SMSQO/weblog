@@ -27,7 +27,7 @@
         WHERE id = #{publisher}
            OR id = #{fan}
     </select>
-    <select id="getOnesFans" resultType="java.lang.Integer">
+    <select id="getOnesFans">
         SELECT COUNT(*)
         FROM subscribe
         WHERE publisher = #{publisher}

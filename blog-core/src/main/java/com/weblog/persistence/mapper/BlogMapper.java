@@ -11,6 +11,8 @@ public interface BlogMapper {
 
 
     @Nullable
-    BlogInfo getBlogById(long id);
+    BlogInfo getBlogByIdAll(long id);
+    @Nullable
+    BlogInfo getBlogByIdPublic(long id);
 
 }

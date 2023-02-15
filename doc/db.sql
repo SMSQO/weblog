@@ -115,15 +115,15 @@ CREATE TABLE subscribe
 DROP TABLE IF EXISTS comment;
 CREATE TABLE comment
 (
-    id           BIGINT(20) UNSIGNED                                           NOT NULL AUTO_INCREMENT,
-    blogId       BIGINT(20) UNSIGNED                                           NOT NULL,
-    userId       BIGINT(20) UNSIGNED                                           NOT NULL,
-    content      VARCHAR(300) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-    replyTo      BIGINT(20)                                                    NOT NULL,
-    reviewPassed bool,
+    id            BIGINT(20) UNSIGNED                                           NOT NULL AUTO_INCREMENT,
+    post_id       BIGINT(20) UNSIGNED                                           NOT NULL,
+    user_id       BIGINT(20) UNSIGNED                                           NOT NULL,
+    content       VARCHAR(300) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+    reply_to      BIGINT(20) UNSIGNED,
+    review_passed BOOL,
     PRIMARY KEY (id),
-    INDEX i_blogId (blogId),
-    INDEX i_replyTo (replyTo)
+    INDEX i_blogId (post_id),
+    INDEX i_replyTo (reply_to)
 );
 
 SET FOREIGN_KEY_CHECKS = 1;
