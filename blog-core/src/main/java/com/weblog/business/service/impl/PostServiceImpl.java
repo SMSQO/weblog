@@ -30,20 +30,11 @@ public class PostServiceImpl implements PostService {
     private TagMapper tagMapper;
 
     @Override
-    public PostInfo[] listRecommended(int page, int pageSize) throws EntityNotFoundException {
+    public PostInfo[] listRecommended(int page, int pageSize)  {
         PostInfo[] posts = postMapper.listRecommendPostInfo();
-        if(posts.length==0){
-            throw new EntityNotFoundException(String.format("recommend posts not found"));        }
         return posts;
     }
 
-    @Override
-    public PostInfo[] findLikedPosts(long pid) throws EntityNotFoundException {
-        PostInfo[] posts = postMapper.getBloggerLikedPosts(pid);
-        if(posts.length==0){
-            throw new EntityNotFoundException(String.format("recommend posts not found"));        }
-        return posts;
-    }
 
     @Override
     public void likePost(long bid, long pid) {
@@ -52,7 +43,7 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public Set<PostInfo> searchPosts(String[] tagsname, String findname) throws EntityNotFoundException {
+    public Set<PostInfo> searchPosts(String[] tagsname, String findname)  {
 //        TagInfo tag = null;
 //        if (tagsname != "") {
 //            tag = tagMapper.getTagInfoByName(tagsname);
@@ -68,13 +59,11 @@ public class PostServiceImpl implements PostService {
             TagInfo taginfo = tagMapper.getTagInfoByName(tagname);
             if(taginfo!=null) {
                 posts.addAll(postMapper.searchPostsByTitle(taginfo.getId(), findname));
-                posts.addAll(postMapper.searchPostsByContent(taginfo.getId(), findname));
+                posts.addAll(postMapper.searchPostsByDetail(taginfo.getId(), findname));
             }
         }
 
-        if(posts.size()==0){
-            throw new EntityNotFoundException(String.format("search posts not found"));
-        }
+
 
         return posts;
 

@@ -18,7 +18,7 @@ public interface PostMapper {
     List<PostInfo> searchPostsByTitle(Long tid, String findname);
 
 
-    List<PostInfo> searchPostsByContent(Long tid,String findname);
+    List<PostInfo> searchPostsByDetail(Long tid,String findname);
 
     void addBloggerLikePost(long bid ,long pid);
 
