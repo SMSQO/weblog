@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.weblog.persistence.mapper.BlogMapper">
+
+    <select id="getBlogByIdAll" resultType="com.weblog.business.entity.BlogInfo">
+        SELECT visit_count,
+               like_count,
+               count(fan)   as fans,
+               count(title) as blogCount
+        FROM blog
+                 left outer join subscribe on publisher = blogger_id
+                 left outer join post on blogger_id = author
+        WHERE blogger_id = #{id}
+        group by visit_count, like_count
+    </select>
+    <select id="getBlogByIdPublic" resultType="com.weblog.business.entity.BlogInfo">
+        SELECT visit_count,
+               like_count,
+               count(fan)   as fans,
+               count(title) as blogCount
+        FROM blog
+                 left outer join subscribe on publisher = blogger_id
+                 left outer join post on blogger_id = author
+        WHERE blogger_id = #{id} and is_public = 1
+        group by visit_count, like_count
+    </select>
+</mapper>
