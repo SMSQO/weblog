@@ -127,3 +127,15 @@ CREATE TABLE comment
 );
 
 SET FOREIGN_KEY_CHECKS = 1;
+
+DROP TABLE IF EXISTS blogger_likedpost;
+CREATE TABLE blogger_likedpost (
+                          post_id BIGINT(20) UNSIGNED NOT NULL,
+                          blogger_id  BIGINT(20) UNSIGNED NOT NULL,
+
+                          PRIMARY KEY (post_id, blogger_id)
+) ENGINE = InnoDB
+  AUTO_INCREMENT = 0
+  CHARACTER SET = utf8mb4
+  COLLATE = utf8mb4_unicode_ci
+  ROW_FORMAT = COMPACT;

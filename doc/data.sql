@@ -55,3 +55,12 @@ VALUES (2, 1, 'dsads', null),
        (1, 1, '理塘丁真', null),
        (1, 3, '电子烟！', null),
        (1, 4, '锐克5', null);
+       
+INSERT INTO blogger_likedpost(post_id, blogger_id)
+VALUES (1, 1),
+       (1, 2),
+       (2, 3),
+       (2, 4),
+       (2, 5),
+       (2, 6);
+
