@@ -57,8 +57,8 @@ CREATE TABLE attachment (
     id       BIGINT(20) UNSIGNED                                           NOT NULL AUTO_INCREMENT,
     `name`   VARCHAR(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci  NOT NULL,
     `suffix` VARCHAR(16) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci  NOT NULL,
-    url      VARCHAR(300) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
     `owner`  BIGINT(20) UNSIGNED                                           NOT NULL,
+    md5sum   CHAR(32)                                                     NOT NULL,
     filesize BIGINT(20) UNSIGNED                                           NOT NULL,
 
     PRIMARY KEY (id)

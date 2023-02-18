@@ -8,19 +8,21 @@
         VALUES (#{name}, #{contact}, #{password}, #{email}, #{graduate})
     </insert>
 
-    <select id="getBloggerById" resultType="com.weblog.business.entity.BloggerInfo">
-        SELECT id,
-               `name`,
-               '' AS avatarUrl,
-               contact,
-               email,
-               graduate
+    <sql id="bloggerColumn">
+        SELECT blogger.id,
+               blogger.`name`,
+               blogger.contact,
+               blogger.email,
+               blogger.graduate
         FROM blogger
+    </sql>
+
+    <select id="getBloggerById" resultType="com.weblog.business.entity.BloggerInfo">
+        <include refid="bloggerColumn"/>
         WHERE id = #{id}
     </select>
     <select id="getBloggerByContactAndPassword" resultType="com.weblog.business.entity.BloggerInfo">
-        SELECT id, `name`, '' AS avatarUrl, contact, email, graduate
-        FROM blogger
+        <include refid="bloggerColumn"/>
         WHERE contact = #{contact}
           AND `password` = #{password}
     </select>

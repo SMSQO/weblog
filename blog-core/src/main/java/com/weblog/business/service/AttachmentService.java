@@ -15,4 +15,6 @@ public interface AttachmentService {
     long saveAttachment(long uid, String filename, MultipartFile file) throws IOException;
 
     void deleteAttachment(long aid) throws EntityNotFoundException;
+
+    String getAttachmentMd5sum(long aid);
 }

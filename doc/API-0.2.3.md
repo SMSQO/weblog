@@ -129,13 +129,14 @@ type Result<T> = { code: int } & ({content: T} | { reason: string })
 > 1. **博客**中的数据经常变化, 而博主的数据不是. 分开能方便数据库的设计, 也许也能优化性能...?; 
 > 2. 方便归类. 像标签,附件等功能归给**博主**, 博文等归给**博客**.
 
-| 方法  | 接口             | 参数                    | 返回        | 描述                           |
-| ----- | ---------------- | ----------------------- | ----------- | ------------------------------ |
-| GET   | /blogger/self    | -                       | BloggerInfo | 查询当前登录用户的个人简介     |
-| GET   | /blogger/{uid}   | -                       | BloggerInfo | 查询个人简介(不包括博客的信息) |
-| PATCH | /blogger/{uid}   | info: BloggerInfo       | -           | 修改个人简介                   |
-| GET   | /blog/{bid}      | -                       | BlogInfo    | 查看个人博客数据               |
-| GET   | /blog/{bid}/post | page: int, perpage: int | PostInfo[]  | 查看个人全部博文               |
+| 方法  | 接口                  | 参数                    | 返回        | 描述                           |
+| ----- | --------------------- | ----------------------- | ----------- | ------------------------------ |
+| GET   | /blogger/self         | -                       | BloggerInfo | 查询当前登录用户的个人简介     |
+| GET   | /blogger/{uid}        | -                       | BloggerInfo | 查询个人简介(不包括博客的信息) |
+| PATCH | /blogger/{uid}/avatar | file: File              | string      | 上传个人头像                   |
+| PATCH | /blogger/{uid}        | info: BloggerInfo       | -           | 修改个人简介                   |
+| GET   | /blog/{bid}           | -                       | BlogInfo    | 查看个人博客数据               |
+| GET   | /blog/{bid}/post      | page: int, perpage: int | PostInfo[]  | 查看个人全部博文               |
 
 ### 2.2 标签和附件
 

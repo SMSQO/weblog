@@ -1,12 +1,14 @@
 package com.weblog.business.service;
 
-import com.weblog.business.entity.BloggerInfo;
+import com.weblog.business.exception.LoginRegisterException;
 import com.weblog.business.exception.NotLoggedInException;
 import com.weblog.business.exception.PermissionDeniedException;
 
 public interface PermissionService {
 
-    BloggerInfo getSelfBloggerInfo() throws NotLoggedInException;
+    long loginBlogger(String contact, String password) throws LoginRegisterException;
+
+    void logoutBlogger() throws LoginRegisterException;
 
     long getSelfBloggerId() throws NotLoggedInException;
 

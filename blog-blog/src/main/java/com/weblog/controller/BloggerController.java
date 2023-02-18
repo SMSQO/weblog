@@ -1,20 +1,19 @@
 package com.weblog.controller;
 
 import com.weblog.business.entity.BloggerInfo;
-import com.weblog.business.exception.EntityNotFoundException;
-import com.weblog.business.exception.NotLoggedInException;
-import com.weblog.business.exception.PermissionDeniedException;
-import com.weblog.business.exception.SameContactException;
+import com.weblog.business.exception.*;
 import com.weblog.business.service.BloggerService;
 import com.weblog.business.service.PermissionService;
-import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 
-@Slf4j
 @RestController
-@RequestMapping(value = "/blogger")
+@RequestMapping("/blogger")
 public class BloggerController {
 
     @Autowired
@@ -24,12 +23,13 @@ public class BloggerController {
     private PermissionService permissionService;
 
     @GetMapping("/self")
-    private BloggerInfo getSelfBloggerInfo() throws NotLoggedInException {
-        return permissionService.getSelfBloggerInfo();
+    public BloggerInfo getSelfBloggerInfo() throws NotLoggedInException, EntityNotFoundException {
+        val uid = permissionService.getSelfBloggerId();
+        return bloggerService.getBloggerInfo(uid);
     }
 
     @GetMapping("/{uid}")
-    public BloggerInfo getBloggerInfo(@PathVariable("uid") long uid) {
+    public BloggerInfo getBloggerInfo(@PathVariable("uid") long uid) throws EntityNotFoundException {
         return bloggerService.getBloggerInfo(uid);
     }
 
@@ -41,5 +41,17 @@ public class BloggerController {
         permissionService.assertIsSelfBlogger(uid);
         info.setId(uid);
         bloggerService.updateBloggerInfo(info);
+    }
+
+    @PatchMapping("/{uid}/avatar")
+    public String updateBloggerAvatar(
+            @PathVariable("uid") long uid,
+            @RequestParam("file") MultipartFile file
+    ) throws PermissionDeniedException, NotLoggedInException, EmptyAttachmentException, IOException {
+        permissionService.assertIsSelfBlogger(uid);
+        if (file.isEmpty()) {
+            throw new EmptyAttachmentException();
+        }
+        return bloggerService.updateBloggerAvatar(uid, file);
     }
 }

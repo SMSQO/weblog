@@ -3,6 +3,7 @@ package com.weblog.controller;
 import com.weblog.business.entity.BloggerInfo;
 import com.weblog.business.exception.LoginRegisterException;
 import com.weblog.business.service.BloggerService;
+import com.weblog.business.service.PermissionService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -15,14 +16,17 @@ public class LoginRegisterController {
     @Autowired
     private BloggerService bloggerService;
 
+    @Autowired
+    private PermissionService permissionService;
+
     @PostMapping("/login")
     public long login(String contact, String password) throws LoginRegisterException {
-        return bloggerService.loginBlogger(contact, password);
+        return permissionService.loginBlogger(contact, password);
     }
 
     @PostMapping("/logout")
     public void logout() throws LoginRegisterException {
-        bloggerService.logoutBlogger();
+        permissionService.logoutBlogger();
     }
 
     @PostMapping("/register")

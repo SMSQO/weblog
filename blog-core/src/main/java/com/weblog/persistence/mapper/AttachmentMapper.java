@@ -8,11 +8,13 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface AttachmentMapper {
 
-    void addAttachmentInfo(AttachmentInfo attach);
+    void addAttachmentInfo(AttachmentInfo attach, String md5);
 
     int deleteAttachmentInfo(long aid);
 
     AttachmentInfo[] getBloggerAttachment(long uid, int from, int count);
 
-    AttachmentInfo getAttachmentInfo(long tid);
+    AttachmentInfo getAttachmentInfo(long aid);
+
+    String getAttachmentMd5(long aid);
 }

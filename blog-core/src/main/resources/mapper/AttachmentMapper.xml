@@ -19,9 +19,9 @@
         </association>
     </resultMap>
 
-    <insert id="addAttachmentInfo" useGeneratedKeys="true" keyProperty="id">
-        INSERT INTO attachment(name, suffix, url, owner, filesize)
-        VALUES (#{name}, #{suffix}, #{url}, #{owner.id}, #{filesize})
+    <insert id="addAttachmentInfo" useGeneratedKeys="true" keyProperty="attach.id">
+        INSERT INTO attachment(name, suffix, md5sum, owner, filesize)
+        VALUES (#{attach.name}, #{attach.suffix}, #{md5}, #{attach.owner.id}, #{attach.filesize})
     </insert>
     <delete id="deleteAttachmentInfo">
         DELETE
@@ -30,15 +30,19 @@
     </delete>
 
     <select id="getBloggerAttachment" resultMap="attachmentInfo">
-        select id, name, suffix, url, owner, filesize
+        select id, name, suffix, owner, filesize
         FROM attachment
         WHERE owner = #{uid}
         LIMIT #{from}, #{count}
     </select>
     <select id="getAttachmentInfo" resultMap="attachmentInfo">
-        SELECT id, name, suffix, url, owner, filesize
+        SELECT id, name, suffix, owner, filesize
         FROM attachment
-        WHERE id = #{tid}
+        WHERE id = #{aid}
     </select>
-
+    <select id="getAttachmentMd5" resultType="java.lang.String">
+        SELECT md5sum
+        FROM attachment
+        WHERE id = #{aid}
+    </select>
 </mapper>

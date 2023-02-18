@@ -24,7 +24,6 @@ public class AttachmentController {
     @Autowired
     private PermissionService permissionService;
 
-
     @GetMapping
     public AttachmentInfo[] getBloggerAttachments(
             @PathVariable("uid") long uid,

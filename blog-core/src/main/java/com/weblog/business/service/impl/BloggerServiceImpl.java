@@ -12,8 +12,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.http.HttpServletRequest;
+import java.io.File;
+import java.io.IOException;
+
+import static com.weblog.business.ConstantUtil.*;
 
 @Slf4j
 @Service
@@ -22,14 +26,14 @@ public class BloggerServiceImpl implements BloggerService {
     @Autowired
     private BloggerMapper bloggerMapper;
 
-    @Autowired
-    private HttpServletRequest request;
-
-    private final static String BLOGGER_KEY = PermissionServiceImpl.BLOGGER_KEY;
-
     @Override
-    public BloggerInfo getBloggerInfo(long uid) {
-        return bloggerMapper.getBloggerById(uid);
+    public BloggerInfo getBloggerInfo(long uid) throws EntityNotFoundException {
+        val blogger = bloggerMapper.getBloggerById(uid);
+        if (blogger == null) {
+            throw new EntityNotFoundException(String.format("blogger with id %d not found", uid));
+        }
+        blogger.setAvatarUrl(String.format(AVATAR_URL_PATTERN, uid));
+        return blogger;
     }
 
     @Override
@@ -56,21 +60,14 @@ public class BloggerServiceImpl implements BloggerService {
     }
 
     @Override
-    public long loginBlogger(String contact, String password) throws LoginRegisterException {
-        val blogger = bloggerMapper.getBloggerByContactAndPassword(contact, password);
-        if (blogger == null) {
-            throw new LoginRegisterException("Either contact or password wrong. Please retry.");
+    public String updateBloggerAvatar(long uid, MultipartFile file) throws IOException {
+        val path = new File(AVATAR_REAL_PATH);
+        if (!path.exists()) {
+            //noinspection ResultOfMethodCallIgnored
+            path.mkdirs();
         }
-        val bloggerId = blogger.getId();
-        request.getSession().setAttribute(BLOGGER_KEY, bloggerId);
-        return bloggerId;
-    }
-
-    @Override
-    public void logoutBlogger() throws LoginRegisterException {
-        if (request.getSession().getAttribute(BLOGGER_KEY) == null) {
-            throw new LoginRegisterException("Not logged in");
-        }
-        request.getSession().removeAttribute(BLOGGER_KEY);
+        val f = new File(path, String.valueOf(uid));
+        file.transferTo(f);
+        return String.format(AVATAR_URL_PATTERN, uid);
     }
 }

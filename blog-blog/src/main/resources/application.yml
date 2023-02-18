@@ -10,10 +10,25 @@ spring:
     url: jdbc:mysql://localhost:3306/weblog?severTimezone=GMT%2B8@useSLL=true
     username: root
     password: 123456
+
   servlet:
     multipart:
       max-file-size: 536870912  # 512MB
       max-request-size: 536870912
+      location: ./
+
+  mvc:
+    static-path-pattern: /static/** # 这个接口不在API文档中, 只用来做重定向
+
+  web:
+    resources:
+      static-locations:
+        - file:./src/
+        # 这四个是默认配置
+        - classpath:/META-INF/resources/
+        - classpath:/resources/
+        - classpath:/static/
+        - classpath:/public/
 
 mybatis:
   mapper-locations: classpath:/mapper/*.xml

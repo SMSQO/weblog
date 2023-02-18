@@ -1,6 +1,6 @@
 package com.weblog.business.service.impl;
 
-import com.weblog.business.entity.BloggerInfo;
+import com.weblog.business.exception.LoginRegisterException;
 import com.weblog.business.exception.NotLoggedInException;
 import com.weblog.business.exception.PermissionDeniedException;
 import com.weblog.business.service.PermissionService;
@@ -28,9 +28,22 @@ public class PermissionServiceImpl implements PermissionService {
     private BloggerMapper bloggerMapper;
 
     @Override
-    public BloggerInfo getSelfBloggerInfo() throws NotLoggedInException {
-        val bloggerId = getSelfBloggerId();
-        return bloggerMapper.getBloggerById(bloggerId);
+    public long loginBlogger(String contact, String password) throws LoginRegisterException {
+        val blogger = bloggerMapper.getBloggerByContactAndPassword(contact, password);
+        if (blogger == null) {
+            throw new LoginRegisterException("Either contact or password wrong. Please retry.");
+        }
+        val bloggerId = blogger.getId();
+        request.getSession().setAttribute(BLOGGER_KEY, bloggerId);
+        return bloggerId;
+    }
+
+    @Override
+    public void logoutBlogger() throws LoginRegisterException {
+        if (request.getSession().getAttribute(BLOGGER_KEY) == null) {
+            throw new LoginRegisterException("Not logged in");
+        }
+        request.getSession().removeAttribute(BLOGGER_KEY);
     }
 
     @Override

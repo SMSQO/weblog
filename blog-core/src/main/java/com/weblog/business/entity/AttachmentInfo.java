@@ -11,7 +11,7 @@ public class AttachmentInfo {
     long id;
     String name;
     String suffix;
-    String url; // URL
+    String url;     // URL
     BloggerInfo owner;
     long filesize;
 }
