@@ -10,6 +10,10 @@ spring:
     url: jdbc:mysql://localhost:3306/weblog?severTimezone=GMT%2B8@useSLL=true
     username: root
     password: 123456
+  servlet:
+    multipart:
+      max-file-size: 536870912  # 512MB
+      max-request-size: 536870912
 
 mybatis:
   mapper-locations: classpath:/mapper/*.xml
@@ -17,3 +21,11 @@ mybatis:
 logging:
   level:
     com.weblog.persistence.mapper: DEBUG
+
+
+# server:
+#   servlet:
+#     session:
+#       cookie:
+#         same-site: none
+#         secure: true

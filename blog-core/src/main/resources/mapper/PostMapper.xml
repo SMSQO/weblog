@@ -52,47 +52,32 @@
     </insert>
 
     <insert id="addBloggerLikePost" useGeneratedKeys="true">
-        INSERT INTO blogger_likedpost(post_id,blogger_id) value (#(pid),#(bid))
+        INSERT INTO blogger_liked_post(post_id, blogger_id) VALUE (#{pid},#{bid})
     </insert>
-    <select id = "listRecommendPostInfo" resultMap="postInfo">
-        <include refid="postInfoColumn"/>
-        order by post.likes desc,post.id desc
+    <select id="listRecommendPostInfo" resultMap="postInfo">
+        <include refid="postInfoColumnP"/>
+        ORDER BY p.likes DESC,
+                 p.id DESC
     </select>
 
     <select id="getBloggerLikedPosts" resultMap="postInfo">
-        <include refid="postInfoColumn"/>
-        from post
+        <include refid="postInfoColumnP"/>
         where id in (select pid from post_like where bid = #{bid})
     </select>
 
 
-
     <select id="searchPostsByTitle" resultMap="postInfo">
-        select p.id,
-               p.title,
-               p.content,
-               p.detail,
-               p.author,
-               p.avatar,
-               p.visits,
-               p.likes,
-               0 AS unreviewdCount
-        from post p left join post_tag pt on p.id = pt.post_id
-        where pt.tag_id = #{tid} and p.title  like "%"#{findname}"%"
+        <include refid="postInfoColumnP"/>
+        LEFT JOIN post_tag pt ON p.id = pt.post_id
+        WHERE pt.tag_id = #{tid}
+        AND p.title LIKE CONCAT('%', #{findname}, '%')
     </select>
 
     <select id="searchPostsByDetail" resultMap="postInfo">
-        select p.id,
-               p.title,
-               p.content,
-               p.detail,
-               p.author,
-               p.avatar,
-               p.visits,
-               p.likes,
-               0 AS unreviewdCount
-        from post p left join post_tag pt on p.id = pt.post_id
-        where pt.tag_id = #{tid} and p.detail  like "%"#{findname}"%"
+        <include refid="postInfoColumnP"/>
+        LEFT JOIN post_tag pt ON p.id = pt.post_id
+        WHERE pt.tag_id = #{tid}
+        AND p.detail LIKE CONCAT('%', #{findname}, '%')
     </select>
     <update id="updatePostInfo">
         UPDATE post
@@ -144,26 +129,27 @@
         WHERE id = #{pid}
     </delete>
 
-    <sql id="postInfoColumn">
-        SELECT id,
-               title,
-               content,
-               detail,
-               author,
-               avatar,
-               visits,
-               likes,
-               0 AS unreviewdCount
-        FROM post
+    <sql id="postInfoColumnP">
+        SELECT p.id      AS id,
+               p.title   AS title,
+               p.content AS content,
+               p.detail  AS detail,
+               p.author  AS author,
+               p.avatar  AS avatar,
+               p.visits  AS visits,
+               p.likes   AS likes,
+               0         AS unreviewdCount
+        FROM post p
     </sql>
+
     <select id="getBloggerAllPostInfo" resultMap="postInfo">
-        <include refid="postInfoColumn"/>
+        <include refid="postInfoColumnP"/>
         WHERE author = #{uid} limit #{count} offset #{start}
     </select>
     <select id="getBloggerPublicPostInfo" resultMap="postInfo">
-        <include refid="postInfoColumn"/>
+        <include refid="postInfoColumnP"/>
         WHERE author = #{uid}
-        AND is_public = TRUE  limit #{count} offset #{start}
+        AND is_public = TRUE limit #{count} offset #{start}
     </select>
     <select id="getPostTags" resultMap="tagInfo">
         SELECT tag.id AS id, name, owner, description
@@ -178,7 +164,7 @@
         WHERE id = #{pid}
     </select>
     <select id="getPostInfo" resultMap="postInfo">
-        <include refid="postInfoColumn"/>
+        <include refid="postInfoColumnP"/>
         where id = #{pid}
     </select>
     <select id="getPostDetail" resultType="java.lang.String">

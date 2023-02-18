@@ -4,6 +4,7 @@ import com.weblog.business.entity.BloggerInfo;
 import com.weblog.business.exception.NotLoggedInException;
 import com.weblog.business.exception.PermissionDeniedException;
 import com.weblog.business.service.PermissionService;
+import com.weblog.persistence.mapper.BloggerMapper;
 import com.weblog.persistence.mapper.PermissionMapper;
 import lombok.val;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +16,7 @@ import javax.servlet.http.HttpServletRequest;
 @Service
 public class PermissionServiceImpl implements PermissionService {
 
-    private final static String BLOGGER_KEY = "blogger";
+    public final static String BLOGGER_KEY = "blogger-id";
 
     @Autowired
     private HttpServletRequest request;
@@ -23,18 +24,22 @@ public class PermissionServiceImpl implements PermissionService {
     @Autowired
     private PermissionMapper permissionMapper;
 
+    @Autowired
+    private BloggerMapper bloggerMapper;
+
     @Override
     public BloggerInfo getSelfBloggerInfo() throws NotLoggedInException {
-        val blogger = (BloggerInfo) request.getSession().getAttribute(BLOGGER_KEY);
-        if (blogger == null) {
-            throw new NotLoggedInException();
-        }
-        return blogger;
+        val bloggerId = getSelfBloggerId();
+        return bloggerMapper.getBloggerById(bloggerId);
     }
 
     @Override
     public long getSelfBloggerId() throws NotLoggedInException {
-        return getSelfBloggerInfo().getId();
+        val bloggerId = request.getSession().getAttribute(BLOGGER_KEY);
+        if (bloggerId == null) {
+            throw new NotLoggedInException();
+        }
+        return (long) bloggerId;
     }
 
     @Override

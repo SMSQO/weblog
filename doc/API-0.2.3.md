@@ -141,7 +141,8 @@ type Result<T> = { code: int } & ({content: T} | { reason: string })
 
 | 方法   | 接口                            | 参数                     | 返回             | 描述             |
 | ------ | ------------------------------- | ------------------------ | ---------------- | ---------------- |
-| GET    | /public/tag/                    | page: int, perpage: int  | TagInfo[]        | 查询公开标签     |
+| GET    | /public/tag                     | page: int, perpage: int  | TagInfo[]        | 查询公开标签     |
+| GET    | /public/tag/hot                 | -                        | TagInfo[10]      | 查询火热的标签   |
 | GET    | /blogger/{uid}/tag              | page: int, perpage: int  | TagInfo[]        | 查询某用户的标签 |
 | GET    | /blogger/{uid}/tag/{tid}        | -                        | TagInfo          | 获取标签信息     |
 | POST   | /blogger/{uid}/tag              | tag: TagInfo             | long             | 添加标签         |
@@ -185,7 +186,7 @@ type Result<T> = { code: int } & ({content: T} | { reason: string })
 
 | 方法 | 接口                    | 参数                         | 返回       | 描述                                |
 | ---- | ----------------------- | ---------------------------- | ---------- | ----------------------------------- |
-| POST | /public/post            | page: int, perpage: int      | PostInfo[] | 按照时间/推荐, 返回在首页展示的博文 |
+| GET  | /public/post            | page: int, perpage: int      | PostInfo[] | 按照时间/推荐, 返回在首页展示的博文 |
 | GET  | /public/search          | tags: string[], info: string | PostInfo[] | 搜索帖子                            |
 | POST | /public/post/{pid}/like |                              | -          | 喜欢博文                            |
 

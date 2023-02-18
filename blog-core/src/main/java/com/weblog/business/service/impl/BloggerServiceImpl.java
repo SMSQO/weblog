@@ -6,6 +6,7 @@ import com.weblog.business.exception.LoginRegisterException;
 import com.weblog.business.exception.SameContactException;
 import com.weblog.business.service.BloggerService;
 import com.weblog.persistence.mapper.BloggerMapper;
+import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
 
+@Slf4j
 @Service
 public class BloggerServiceImpl implements BloggerService {
 
@@ -23,7 +25,7 @@ public class BloggerServiceImpl implements BloggerService {
     @Autowired
     private HttpServletRequest request;
 
-    private final static String BLOGGER_KEY = "blogger";
+    private final static String BLOGGER_KEY = PermissionServiceImpl.BLOGGER_KEY;
 
     @Override
     public BloggerInfo getBloggerInfo(long uid) {
@@ -59,8 +61,9 @@ public class BloggerServiceImpl implements BloggerService {
         if (blogger == null) {
             throw new LoginRegisterException("Either contact or password wrong. Please retry.");
         }
-        request.getSession().setAttribute(BLOGGER_KEY, blogger);
-        return blogger.getId();
+        val bloggerId = blogger.getId();
+        request.getSession().setAttribute(BLOGGER_KEY, bloggerId);
+        return bloggerId;
     }
 
     @Override

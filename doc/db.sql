@@ -5,8 +5,7 @@ SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;
 
 DROP TABLE IF EXISTS blogger;
-CREATE TABLE blogger
-(
+CREATE TABLE blogger (
     id         BIGINT(20) UNSIGNED                                           NOT NULL AUTO_INCREMENT,
     `name`     VARCHAR(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
     contact    CHAR(15) UNIQUE,
@@ -22,8 +21,7 @@ CREATE TABLE blogger
   ROW_FORMAT = COMPACT;
 
 DROP TABLE IF EXISTS blog;
-CREATE TABLE blog
-(
+CREATE TABLE blog (
     blogger_id  BIGINT(20) UNSIGNED NOT NULL,
     visit_count BIGINT(20) UNSIGNED DEFAULT 0,
     like_count  INT(10)             DEFAULT 0
@@ -33,9 +31,15 @@ CREATE TABLE blog
   COLLATE = utf8mb4_unicode_ci
   ROW_FORMAT = COMPACT;
 
+CREATE TRIGGER tri_add_blogger
+    AFTER INSERT
+    ON blogger
+    FOR EACH ROW
+    INSERT INTO blog (blogger_id, visit_count, like_count)
+    VALUES (new.id, 0, 0);
+
 DROP TABLE IF EXISTS tag;
-CREATE TABLE tag
-(
+CREATE TABLE tag (
     id            BIGINT(20) UNSIGNED                                           NOT NULL AUTO_INCREMENT,
     `name`        VARCHAR(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci  NOT NULL,
     `owner`       BIGINT(20) UNSIGNED                                           NULL,
@@ -49,8 +53,7 @@ CREATE TABLE tag
   ROW_FORMAT = COMPACT;
 
 DROP TABLE IF EXISTS attachment;
-CREATE TABLE attachment
-(
+CREATE TABLE attachment (
     id       BIGINT(20) UNSIGNED                                           NOT NULL AUTO_INCREMENT,
     `name`   VARCHAR(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci  NOT NULL,
     `suffix` VARCHAR(16) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci  NOT NULL,
@@ -66,8 +69,7 @@ CREATE TABLE attachment
   ROW_FORMAT = COMPACT;
 
 DROP TABLE IF EXISTS post;
-CREATE TABLE post
-(
+CREATE TABLE post (
     id                  BIGINT(20) UNSIGNED                                           NOT NULL AUTO_INCREMENT,
     title               VARCHAR(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci  NOT NULL,
     content             VARCHAR(300) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -89,8 +91,7 @@ CREATE TABLE post
   ROW_FORMAT = COMPACT;
 
 DROP TABLE IF EXISTS post_tag;
-CREATE TABLE post_tag
-(
+CREATE TABLE post_tag (
     post_id BIGINT(20) UNSIGNED NOT NULL,
     tag_id  BIGINT(20) UNSIGNED NOT NULL,
 
@@ -102,8 +103,7 @@ CREATE TABLE post_tag
   ROW_FORMAT = COMPACT;
 
 DROP TABLE IF EXISTS subscribe;
-CREATE TABLE subscribe
-(
+CREATE TABLE subscribe (
     publisher BIGINT(20) UNSIGNED NOT NULL,
     fan       BIGINT(20) UNSIGNED NOT NULL,
 
@@ -113,8 +113,7 @@ CREATE TABLE subscribe
 );
 
 DROP TABLE IF EXISTS comment;
-CREATE TABLE comment
-(
+CREATE TABLE comment (
     id            BIGINT(20) UNSIGNED                                           NOT NULL AUTO_INCREMENT,
     post_id       BIGINT(20) UNSIGNED                                           NOT NULL,
     user_id       BIGINT(20) UNSIGNED                                           NOT NULL,
@@ -128,12 +127,12 @@ CREATE TABLE comment
 
 SET FOREIGN_KEY_CHECKS = 1;
 
-DROP TABLE IF EXISTS blogger_likedpost;
-CREATE TABLE blogger_likedpost (
-                          post_id BIGINT(20) UNSIGNED NOT NULL,
-                          blogger_id  BIGINT(20) UNSIGNED NOT NULL,
+DROP TABLE IF EXISTS blogger_liked_post;
+CREATE TABLE blogger_liked_post (
+    post_id    BIGINT(20) UNSIGNED NOT NULL,
+    blogger_id BIGINT(20) UNSIGNED NOT NULL,
 
-                          PRIMARY KEY (post_id, blogger_id)
+    PRIMARY KEY (post_id, blogger_id)
 ) ENGINE = InnoDB
   AUTO_INCREMENT = 0
   CHARACTER SET = utf8mb4

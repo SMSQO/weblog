@@ -1,6 +1,7 @@
 package com.weblog.controller;
 
 import com.weblog.business.entity.AttachmentInfo;
+import com.weblog.business.exception.EmptyAttachmentException;
 import com.weblog.business.exception.EntityNotFoundException;
 import com.weblog.business.exception.NotLoggedInException;
 import com.weblog.business.exception.PermissionDeniedException;
@@ -9,6 +10,8 @@ import com.weblog.business.service.PermissionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 
 @RestController
@@ -45,11 +48,14 @@ public class AttachmentController {
     public long uploadAttachment(
             @PathVariable("uid") long uid,
             @RequestParam("name") String filename,
-            MultipartFile file
-    ) throws PermissionDeniedException, NotLoggedInException {
+            @RequestParam("file") MultipartFile file
+    ) throws PermissionDeniedException, NotLoggedInException, EmptyAttachmentException, IOException {
         permissionService.assertIsSelfBlogger(uid);
         if (filename == null || filename.isBlank()) {
             filename = file.getName();
+        }
+        if (file.isEmpty()) {
+            throw new EmptyAttachmentException();
         }
         return attachmentService.saveAttachment(uid, filename, file);
     }

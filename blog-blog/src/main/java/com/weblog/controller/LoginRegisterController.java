@@ -3,10 +3,12 @@ package com.weblog.controller;
 import com.weblog.business.entity.BloggerInfo;
 import com.weblog.business.exception.LoginRegisterException;
 import com.weblog.business.service.BloggerService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+@Slf4j
 @RestController
 public class LoginRegisterController {
 

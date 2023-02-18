@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RestController
-@RequestMapping(value = "/blog")
+@RequestMapping(value = "/blog/{bid}/post/{pid}/comment")
 public class CommentController {
     @Autowired
     private CommentService commentService;
@@ -25,7 +25,7 @@ public class CommentController {
     @Autowired
     private PermissionService permissionService;
 
-    @GetMapping("/{bid}/post/{pid}/comment")
+    @GetMapping
     @NonNull
     public CommentInfo[] getCommentInfo(@PathVariable("bid") long bid, @PathVariable("pid") long pid, boolean all, int page, int perpage) throws PermissionDeniedException {
         try {
@@ -36,26 +36,26 @@ public class CommentController {
         return commentService.getCommentInfo(bid, pid, all, page, perpage);
     }
 
-    @PostMapping("/{bid}/post/{pid}/comment")
+    @PostMapping
     @NonNull
     public void addCommentInfo(@PathVariable("bid") long bid, @PathVariable("pid") long pid, CommentInfo comment, long reply) throws NotLoggedInException {
         permissionService.getSelfBloggerId();
         commentService.addCommentInfo(bid, pid, comment, reply);
     }
 
-    @DeleteMapping("/{bid}/post/{pid}/comment/{cid}")
+    @DeleteMapping("/{cid}")
     @NonNull
     public void deleteCommentInfo(@PathVariable("bid") long bid, @PathVariable("pid") long pid, @PathVariable("cid") long cid) {
         commentService.deleteCommentInfo(bid, pid, cid);
     }
 
-    @GetMapping("{bid}/post/{pid}/comment/{cid}/reply")
+    @GetMapping("/{cid}/reply")
     @NonNull
     public CommentInfo[] getAllReplyComment(@PathVariable("bid") long bid, @PathVariable("pid") long pid, @PathVariable("cid") long cid, int page, int perpage) {
         return commentService.getAllReplyComment(bid, pid, cid, page, perpage);
     }
 
-    @PostMapping("{bid}/post/{pid}/comment/{cid}/review")
+    @PostMapping("/{cid}/review")
     @NonNull
     public void reviewComment(@PathVariable("bid") long bid, @PathVariable("pid") long pid, @PathVariable("cid") long cid, boolean pass) throws PermissionDeniedException, EntityNotFoundException, NotLoggedInException {
         if (permissionService.getSelfBloggerId() != postService.getPostInfo(pid).getBlogger().getId()) {
