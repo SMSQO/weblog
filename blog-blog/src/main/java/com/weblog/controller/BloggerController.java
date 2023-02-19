@@ -4,6 +4,7 @@ import com.weblog.business.entity.BloggerInfo;
 import com.weblog.business.exception.*;
 import com.weblog.business.service.BloggerService;
 import com.weblog.business.service.PermissionService;
+import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -12,6 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 
 
+@Slf4j
 @RestController
 @RequestMapping("/blogger")
 public class BloggerController {

@@ -84,10 +84,15 @@ public class PermissionServiceImpl implements PermissionService {
     }
 
     @Override
-    public void assertIsPostAvailable(long pid) throws NotLoggedInException, PermissionDeniedException {
-        val uid = getSelfBloggerId();
-        if (!permissionMapper.checkPostAuthor(uid, pid) && !permissionMapper.checkPostPublic(pid)) {
-            throw new PermissionDeniedException();
+    public void assertIsPostAvailable(long pid) throws PermissionDeniedException {
+        Long uid = null;
+        try {
+            uid = getSelfBloggerId();
+        } catch (NotLoggedInException ignore) {
         }
+        if (permissionMapper.checkPostPublic(pid) || uid != null && permissionMapper.checkPostAuthor(uid, pid)) {
+            return;
+        }
+        throw new PermissionDeniedException();
     }
 }

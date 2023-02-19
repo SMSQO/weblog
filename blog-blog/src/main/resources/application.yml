@@ -30,6 +30,11 @@ spring:
         - classpath:/static/
         - classpath:/public/
 
+  redis:
+    host: 127.0.0.1
+    port: 6379
+    database: 0
+
 mybatis:
   mapper-locations: classpath:/mapper/*.xml
 

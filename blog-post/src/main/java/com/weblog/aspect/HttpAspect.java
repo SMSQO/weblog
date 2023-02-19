@@ -18,7 +18,6 @@ import java.util.stream.Collectors;
 @Slf4j
 public class HttpAspect {
 
-
     @Pointcut("execution(public * com.weblog.controller.*.*(..))")
     public void log() {}
 
@@ -29,7 +28,7 @@ public class HttpAspect {
         val request = attributes.getRequest();
 
         String info = String.format(
-                "[%6s] %s |> %s(%s)",
+                "||> [%6s] %s ~> %s(%s)",
                 request.getMethod(),
                 request.getRequestURL(),
                 joinPoint.getSignature().getDeclaringType().getSimpleName() + "." + joinPoint.getSignature().getName(),
