@@ -1,0 +1,29 @@
+server:
+  port: 9023
+  servlet:
+    context-path: /${spring.application.name}
+spring:
+  application:
+    name: blog-gateway
+
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+          lower-case-service-id: true
+      routes:
+        - id: blog-blog
+          uri: lb://blog-blog
+          predicates:
+            - Path=/blog-gateway/blog-blog/**
+        - id: blog-post
+          uri: lb://blog-post
+          predicates:
+            - Path=/blog-gateway/blog-post/**
+      nacos:
+        discovery:
+          server-addr:localhost: 8848 # Nacos地址
+      service-registry:
+        auto-registration:
+          enabled: true

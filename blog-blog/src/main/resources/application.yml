@@ -1,3 +1,5 @@
+server:
+  port: 8080
 spring:
   security:
     user:
@@ -35,17 +37,21 @@ spring:
     port: 6379
     database: 0
 
+  application:
+    name: blog-blog
+
+  cloud:
+    nacos:
+      discovery:
+        server-addr:localhost: 8848 # Nacos地址
+    service-registry:
+      auto-registration:
+        enabled: true
+
+
 mybatis:
   mapper-locations: classpath:/mapper/*.xml
 
 logging:
   level:
     com.weblog.persistence.mapper: DEBUG
-
-
-# server:
-#   servlet:
-#     session:
-#       cookie:
-#         same-site: none
-#         secure: true
