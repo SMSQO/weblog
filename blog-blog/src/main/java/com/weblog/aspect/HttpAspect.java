@@ -32,7 +32,9 @@ public class HttpAspect {
                 request.getMethod(),
                 request.getRequestURL(),
                 joinPoint.getSignature().getDeclaringType().getSimpleName() + "." + joinPoint.getSignature().getName(),
-                Arrays.stream(joinPoint.getArgs()).map(Object::toString).collect(Collectors.joining(","))
+                Arrays.stream(joinPoint.getArgs())
+                        .map(it -> it == null ? "null" : it.toString())
+                        .collect(Collectors.joining(","))
         );
         log.info(info);
     }

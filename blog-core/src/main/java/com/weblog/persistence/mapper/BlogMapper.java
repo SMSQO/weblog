@@ -12,7 +12,9 @@ public interface BlogMapper {
 
     @Nullable
     BlogInfo getBlogByIdAll(long id);
+
     @Nullable
     BlogInfo getBlogByIdPublic(long id);
 
+    void updateBlogVisitCount(long bid, int count);
 }

@@ -17,10 +17,15 @@
         </association>
     </resultMap>
 
+
+    <sql id="TagInfoColumn">
+        SELECT tag.id, tag.description, tag.owner, tag.`name`
+        FROM tag
+    </sql>
+
     <select id="getTagInfoByName" resultMap="tagInfo">
-        select id,description,owner,`name`
-        from tag
-        where `name` = #{tags}
+        <include refid="TagInfoColumn"/>
+        WHERE `name` = #{tag}
     </select>
 
     <insert id="addTag" useGeneratedKeys="true" keyProperty="id">
@@ -43,21 +48,29 @@
     </delete>
 
     <select id="getPublicTags" resultMap="tagInfo">
-        SELECT id, `name`, `description`, owner
-        FROM tag
-        WHERE owner IS NULL
+        <include refid="TagInfoColumn"/>
+        WHERE `owner` IS NULL
         LIMIT #{from}, #{count}
     </select>
     <select id="getBloggerTags" resultMap="tagInfo">
-        SELECT id, `name`, `description`, owner
-        FROM tag
-        WHERE owner = #{uid}
+        <include refid="TagInfoColumn"/>
+        WHERE `owner` = #{uid}
         LIMIT #{from}, #{count}
     </select>
     <select id="getTagInfo" resultMap="tagInfo">
-        SELECT id, name, owner, description
-        FROM tag
+        <include refid="TagInfoColumn"/>
         WHERE id = #{tid}
+    </select>
+
+    <!--suppress SqlResolve, SqlIdentifier -->
+    <select id="getHotTags" resultMap="tagInfo">
+        <include refid="TagInfoColumn"/>, (
+        SELECT tag_id, COUNT(*) count
+        FROM post_tag
+        GROUP BY tag_id) meta
+        WHERE tag.id = meta.tag_id
+        ORDER BY `count` DESC
+        LIMIT 10
     </select>
 
 </mapper>

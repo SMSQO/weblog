@@ -3,6 +3,7 @@ package com.weblog.persistence.mapper;
 import com.weblog.business.entity.PostInfo;
 import com.weblog.business.entity.TagInfo;
 import org.apache.ibatis.annotations.Mapper;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -11,18 +12,15 @@ import java.util.List;
 @Repository
 public interface PostMapper {
 
-    PostInfo[] listRecommendPostInfo();
+    PostInfo[] listRecommendPostInfo(int from, int count);
 
     PostInfo[] getBloggerLikedPosts(long uid);
 
-    List<PostInfo> searchPostsByTitle(Long tid, String findname);
+    List<PostInfo> searchPostsByTagAndTitleHint(@Nullable Long tid, @Nullable String hint);
 
+    List<PostInfo> searchPostsByTagAndDetailHint(@Nullable Long tid, @Nullable String hint);
 
-    List<PostInfo> searchPostsByDetail(Long tid,String findname);
-
-    void addBloggerLikePost(long bid ,long pid);
-
-
+    void addBloggerLikePost(long bid, long pid);
 
     PostInfo[] getBloggerAllPostInfo(long uid, int start, int count);
 

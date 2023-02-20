@@ -3,27 +3,33 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.weblog.persistence.mapper.BlogMapper">
+    <update id="updateBlogVisitCount">
+        UPDATE blog
+        SET visit_count = visit_count + #{count}
+        WHERE blogger_id = #{bid}
+    </update>
 
     <select id="getBlogByIdAll" resultType="com.weblog.business.entity.BlogInfo">
         SELECT visit_count,
                like_count,
-               count(fan)   as fans,
-               count(title) as blogCount
+               COUNT(fan)   AS fans,
+               COUNT(title) AS blogCount
         FROM blog
-                 left outer join subscribe on publisher = blogger_id
-                 left outer join post on blogger_id = author
+                 LEFT OUTER JOIN subscribe ON publisher = blogger_id
+                 LEFT OUTER JOIN post ON blogger_id = author
         WHERE blogger_id = #{id}
-        group by visit_count, like_count
+        GROUP BY visit_count, like_count
     </select>
     <select id="getBlogByIdPublic" resultType="com.weblog.business.entity.BlogInfo">
         SELECT visit_count,
                like_count,
-               count(fan)   as fans,
-               count(title) as blogCount
+               COUNT(fan)   AS fans,
+               COUNT(title) AS blogCount
         FROM blog
-                 left outer join subscribe on publisher = blogger_id
-                 left outer join post on blogger_id = author
-        WHERE blogger_id = #{id} and is_public = 1
-        group by visit_count, like_count
+                 LEFT OUTER JOIN subscribe ON publisher = blogger_id
+                 LEFT OUTER JOIN post ON blogger_id = author
+        WHERE blogger_id = #{id}
+          AND is_public = 1
+        GROUP BY visit_count, like_count
     </select>
 </mapper>

@@ -12,4 +12,14 @@ public class TagInfo {
     String name;
     BloggerInfo owner;
     String description;
+
+    @Override
+    public int hashCode() {
+        return (int) id;
+    }
+
+    @Override
+    public boolean equals(Object that) {
+        return (that instanceof TagInfo) && (this.getId() == ((TagInfo) that).getId());
+    }
 }

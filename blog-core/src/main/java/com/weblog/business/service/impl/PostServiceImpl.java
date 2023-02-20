@@ -2,7 +2,6 @@ package com.weblog.business.service.impl;
 
 import com.weblog.business.entity.BloggerInfo;
 import com.weblog.business.entity.PostInfo;
-import com.weblog.business.entity.TagInfo;
 import com.weblog.business.exception.EntityNotFoundException;
 import com.weblog.business.service.PostService;
 import com.weblog.persistence.mapper.PostMapper;
@@ -10,10 +9,14 @@ import com.weblog.persistence.mapper.TagMapper;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 
 @Slf4j
@@ -30,45 +33,35 @@ public class PostServiceImpl implements PostService {
     private TagMapper tagMapper;
 
     @Override
-    public PostInfo[] listRecommended(int page, int pageSize)  {
-        PostInfo[] posts = postMapper.listRecommendPostInfo();
-        return posts;
+    public PostInfo[] listRecommended(int page, int pageSize) {
+        return postMapper.listRecommendPostInfo(page * pageSize, pageSize);
     }
-
 
     @Override
     public void likePost(long bid, long pid) {
-        postMapper.updateAddPostLike(pid,1);
+        postMapper.updateAddPostLike(pid, 1);
         postMapper.addBloggerLikePost(bid, pid);
     }
 
     @Override
-    public Set<PostInfo> searchPosts(String[] tagsname, String findname)  {
-//        TagInfo tag = null;
-//        if (tagsname != "") {
-//            tag = tagMapper.getTagInfoByName(tagsname);
-//            if(tag==null) return null; //没有找到合适标签
-//            return postMapper.searchPostsByNameAndTags(tag.getId(), findname);
-//        }
-//        PostInfo[] posts=postMapper.searchPostsByName(findname);
-//        if(posts==null) return null;//没有找到合适博文
-
-        Set<PostInfo>posts = new HashSet<PostInfo>();
-        for (String tagname:tagsname
-        ) {
-            TagInfo taginfo = tagMapper.getTagInfoByName(tagname);
-            if(taginfo!=null) {
-                posts.addAll(postMapper.searchPostsByTitle(taginfo.getId(), findname));
-                posts.addAll(postMapper.searchPostsByDetail(taginfo.getId(), findname));
-            }
+    public List<PostInfo> searchPosts(String[] tagNames, @Nullable String hint) {
+        if (tagNames.length != 0) {
+            return Arrays.stream(tagNames)
+                    .map(it -> tagMapper.getTagInfoByName(it))
+                    .filter(Objects::nonNull)
+                    .flatMap(tag -> {
+                        val tid = tag.getId();
+                        val titleStream = postMapper.searchPostsByTagAndTitleHint(tid, hint).stream();
+                        val detailStream = postMapper.searchPostsByTagAndDetailHint(tid, hint).stream();
+                        return Stream.concat(titleStream, detailStream);
+                    }).distinct()
+                    .collect(Collectors.toList());
+        } else {
+            return Stream.concat(
+                    postMapper.searchPostsByTagAndTitleHint(null, hint).stream(),
+                    postMapper.searchPostsByTagAndDetailHint(null, hint).stream()
+            ).distinct().collect(Collectors.toList());
         }
-
-
-
-        return posts;
-
-
-
     }
 
 

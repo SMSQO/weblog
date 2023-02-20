@@ -13,7 +13,8 @@
                blogger.`name`,
                blogger.contact,
                blogger.email,
-               blogger.graduate
+               blogger.graduate,
+               CONCAT('/file/blogger/', blogger.id, '/avatar') AS avatarUrl
         FROM blogger
     </sql>
 

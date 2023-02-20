@@ -9,6 +9,8 @@ public interface TagService {
 
     TagInfo[] getBloggerTags(long bloggerId, int page, int pageSize);
 
+    TagInfo[] getHotTags();
+
     TagInfo getTagInfo(long tid) throws EntityNotFoundException;
 
     long addTag(TagInfo tag);

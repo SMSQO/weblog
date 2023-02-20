@@ -9,4 +9,6 @@ public class ConstantUtil {
     public final static String ATTACHMENT_URL_PATTERN = "/file/blogger/%d/attachment/%d";
     public final static String ATTACHMENT_REAL_PATH =
             System.getProperty("user.dir") + "/src/files/";
+
+    public final static String BLOGS_URL_PATTERN = "/blog/%d/post";
 }

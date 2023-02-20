@@ -25,6 +25,11 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
+    public TagInfo[] getHotTags() {
+        return tagMapper.getHotTags();
+    }
+
+    @Override
     public TagInfo getTagInfo(long tid) throws EntityNotFoundException {
         val tag = tagMapper.getTagInfo(tid);
         if (tag == null) {

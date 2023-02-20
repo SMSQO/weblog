@@ -54,10 +54,12 @@
     <insert id="addBloggerLikePost" useGeneratedKeys="true">
         INSERT INTO blogger_liked_post(post_id, blogger_id) VALUE (#{pid},#{bid})
     </insert>
+    <!--suppress SqlResolve -->
     <select id="listRecommendPostInfo" resultMap="postInfo">
         <include refid="postInfoColumnP"/>
         ORDER BY p.likes DESC,
-                 p.id DESC
+        p.id DESC
+        LIMIT #{from}, #{count}
     </select>
 
     <select id="getBloggerLikedPosts" resultMap="postInfo">
@@ -66,19 +68,34 @@
     </select>
 
 
-    <select id="searchPostsByTitle" resultMap="postInfo">
+    <select id="searchPostsByTagAndTitleHint" resultMap="postInfo">
         <include refid="postInfoColumnP"/>
         LEFT JOIN post_tag pt ON p.id = pt.post_id
-        WHERE pt.tag_id = #{tid}
-        AND p.title LIKE CONCAT('%', #{findname}, '%')
+        <where>
+            AND p.is_public = TRUE
+            <if test="tid != null">
+                AND pt.tag_id = #{tid}
+            </if>
+            <if test="hint != null">
+                AND p.detail LIKE CONCAT('%', #{hint}, '%')
+            </if>
+        </where>
     </select>
 
-    <select id="searchPostsByDetail" resultMap="postInfo">
+    <select id="searchPostsByTagAndDetailHint" resultMap="postInfo">
         <include refid="postInfoColumnP"/>
         LEFT JOIN post_tag pt ON p.id = pt.post_id
-        WHERE pt.tag_id = #{tid}
-        AND p.detail LIKE CONCAT('%', #{findname}, '%')
+        <where>
+            AND p.is_public = TRUE
+            <if test="tid != null">
+                AND pt.tag_id = #{tid}
+            </if>
+            <if test="hint != null">
+                AND p.detail LIKE CONCAT('%', #{hint}, '%')
+            </if>
+        </where>
     </select>
+
     <update id="updatePostInfo">
         UPDATE post
         <set>

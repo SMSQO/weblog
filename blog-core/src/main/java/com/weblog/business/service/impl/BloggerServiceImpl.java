@@ -32,7 +32,6 @@ public class BloggerServiceImpl implements BloggerService {
         if (blogger == null) {
             throw new EntityNotFoundException(String.format("blogger with id %d not found", uid));
         }
-        blogger.setAvatarUrl(String.format(AVATAR_URL_PATTERN, uid));
         return blogger;
     }
 

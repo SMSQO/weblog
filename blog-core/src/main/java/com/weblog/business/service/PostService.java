@@ -3,14 +3,15 @@ package com.weblog.business.service;
 import com.weblog.business.entity.PostInfo;
 import com.weblog.business.exception.EntityNotFoundException;
 
-import java.util.Set;
+import java.util.List;
 
 public interface PostService {
 
     PostInfo[] listRecommended(int page, int pageSize);
 
     void likePost(long bid ,long pid);
-    Set<PostInfo> searchPosts(String tags[], String findname);
+
+    List<PostInfo> searchPosts(String[] tags, String hint);
 
     long addPost(long uid, PostInfo post);
 

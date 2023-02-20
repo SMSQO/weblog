@@ -104,6 +104,7 @@ type Result<T> = { code: int } & ({content: T} | { reason: string })
 | 3      | 查询对象不存在             |
 | 4      | 注册/登录失败              |
 | 5      | 与别人的联系方式(电话)重复 |
+| 6      | 上传的附件内容为空         |
 
 
 

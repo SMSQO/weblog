@@ -9,8 +9,4 @@ public interface BlogService {
     BlogInfo getBlogInfo(long bid, boolean selfWatch) throws EntityNotFoundException;
 
     PostInfo[] getBlogAllPost(boolean selfWatch, long bid, int page, int pageSize);
-
-
-
-
 }
