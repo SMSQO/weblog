@@ -73,7 +73,23 @@ public class PostServiceImpl implements PostService {
         postMapper.addPost(post);
         val pid = post.getId();
         val tags = post.getTags();
+        // if so, normalize tags
         if (tags != null) {
+            // tags.forEach { it -> /* set owner and id of it */ }
+            for (val tag : tags) {
+                // Tag's not exist <=> tag.id == null.
+                // Before updating tags of post, we should first make sure
+                // all these tags exists, i.e. set id of tags.
+                var tid = postMapper.findTagIdByNameAndAuthor(tag.getName(), uid);
+                if (tid != null) {
+                    tag.setId(tid);
+                    continue;
+                }
+                // Tag doesn't exist. Add tag to database.
+                tag.setOwner(new BloggerInfo(uid));
+                tag.setDescription("");
+                tagMapper.addTag(tag);
+            }
             postMapper.updatePostTags(pid, tags);
         }
         return pid;

@@ -189,4 +189,13 @@
         FROM post
         WHERE id = #{pid}
     </select>
+    <select id="findTagIdByNameAndAuthor" resultType="java.lang.Long">
+        SELECT id
+        FROM tag
+        WHERE (owner = #{uid}
+            OR owner IS NULL)
+          AND `name` = #{name}
+        ORDER BY ISNULL(owner) DESC
+        LIMIT 1
+    </select>
 </mapper>

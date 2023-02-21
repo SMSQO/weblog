@@ -15,4 +15,8 @@ public class BloggerInfo {
     String contact;
     String email;
     String graduate;
+
+    public BloggerInfo(long uid) {
+        this.id = uid;
+    }
 }

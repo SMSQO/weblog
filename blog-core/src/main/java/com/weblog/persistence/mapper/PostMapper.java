@@ -49,4 +49,8 @@ public interface PostMapper {
     int updateAddPostLike(long pid, int likes);
 
     int updateAddPostView(long pid, int views);
+
+    // 查找, 先uid下的标签, 再查找公开的标签
+    @Nullable
+    Long findTagIdByNameAndAuthor(String name, long uid);
 }
