@@ -1,5 +1,6 @@
 package com.weblog.controller;
 
+import com.weblog.business.entity.BloggerInfo;
 import com.weblog.business.entity.TagInfo;
 import com.weblog.business.exception.EntityNotFoundException;
 import com.weblog.business.exception.NotLoggedInException;
@@ -7,6 +8,7 @@ import com.weblog.business.exception.PermissionDeniedException;
 import com.weblog.business.service.PermissionService;
 import com.weblog.business.service.TagService;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,8 +28,7 @@ public class TagController {
             @PathVariable("uid") long uid,
             int page,
             @RequestParam("perpage") int pageSize
-    ) throws PermissionDeniedException, NotLoggedInException {
-        permissionService.assertIsSelfBlogger(uid);
+    ) {
         return tagService.getBloggerTags(uid, page, pageSize);
     }
 
@@ -35,14 +36,18 @@ public class TagController {
     public TagInfo getTagInfo(
             @PathVariable("uid") long uid,
             @PathVariable("tid") long tid
-    ) throws EntityNotFoundException, PermissionDeniedException, NotLoggedInException {
-        permissionService.assertIsSelfBlogger(uid);
+    ) throws EntityNotFoundException {
         return tagService.getTagInfo(tid);
     }
 
     @PostMapping
     public long addTag(@PathVariable("uid") long uid, @RequestBody TagInfo tag) throws PermissionDeniedException, NotLoggedInException {
         permissionService.assertIsSelfBlogger(uid);
+        if (tag.getOwner() == null) {
+            val owner = new BloggerInfo();
+            owner.setId(uid);
+            tag.setOwner(owner);
+        }
         return tagService.addTag(tag);
     }
 

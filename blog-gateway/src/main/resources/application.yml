@@ -1,5 +1,5 @@
 server:
-  port: 9023
+  port: 8079
   servlet:
     context-path: /${spring.application.name}
 spring:
@@ -13,17 +13,17 @@ spring:
           enabled: true
           lower-case-service-id: true
       routes:
-        - id: blog-blog
-          uri: lb://blog-blog
-          predicates:
-            - Path=/blog-gateway/blog-blog/**
         - id: blog-post
           uri: lb://blog-post
           predicates:
-            - Path=/blog-gateway/blog-post/**
+            - Path=/blog/{segment}/post/**
+        - id: blog-blog
+          uri: lb://blog-blog
+          predicates:
+            - Path=/**
       nacos:
         discovery:
-          server-addr:localhost: 8848 # Nacos地址
+          server-addr: localhost:8848 # Nacos地址
       service-registry:
         auto-registration:
           enabled: true
