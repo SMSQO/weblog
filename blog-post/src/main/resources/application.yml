@@ -19,6 +19,18 @@ spring:
     port: 6379
     database: 0
 
+  mail:
+    host: smtp.163.com
+    username: meidochanVKX@163.com  # 最后记得把这里的信息抹掉
+    password: JRVCXKASBRFGRJWG      # 最后记得把这里的信息抹掉
+    default-encoding: UTF-8
+    properties:
+      mail:
+        smtp:
+          ssl:
+            enable: false
+            required: false
+
 mybatis:
   mapper-locations: classpath:/mapper/*.xml
 

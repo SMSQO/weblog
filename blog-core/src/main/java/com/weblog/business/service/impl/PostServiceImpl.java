@@ -4,12 +4,17 @@ import com.weblog.business.entity.BloggerInfo;
 import com.weblog.business.entity.PostInfo;
 import com.weblog.business.exception.EntityNotFoundException;
 import com.weblog.business.service.PostService;
+import com.weblog.persistence.mapper.BloggerMapper;
 import com.weblog.persistence.mapper.PostMapper;
+import com.weblog.persistence.mapper.SubscribeMapper;
 import com.weblog.persistence.mapper.TagMapper;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.lang.Nullable;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
@@ -18,19 +23,35 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-
 @Slf4j
 @Service
 public class PostServiceImpl implements PostService {
 
-    private final static String POST_COMMENT_URL = "/blog/%d/post/%d/comment";
-    private final static String POST_DETAIL_URL = "/blog/%d/post/%d/detail";
+    private final PostMapper postMapper;
+    private final TagMapper tagMapper;
+    private final SubscribeMapper subscribeMapper;
+    private final BloggerMapper bloggerMapper;
+    private final JavaMailSender sender;
+
+    @Value("${spring.mail.username}")
+    private String mailSenderAddr;
+
+    private final static String MAIL_TITLE = "您关注的博主发布了新博文";
+    private final static String MAIL_CONTENT_PATTERN = "您关注的博主 %s 刚发布了一篇博文, 标题为 %s. 快来看看吧!";
 
     @Autowired
-    private PostMapper postMapper;
-
-    @Autowired
-    private TagMapper tagMapper;
+    public PostServiceImpl(
+            PostMapper postMapper,
+            TagMapper tagMapper,
+            SubscribeMapper subscribeMapper,
+            BloggerMapper bloggerMapper,
+            JavaMailSender sender) {
+        this.postMapper = postMapper;
+        this.tagMapper = tagMapper;
+        this.subscribeMapper = subscribeMapper;
+        this.bloggerMapper = bloggerMapper;
+        this.sender = sender;
+    }
 
     @Override
     public PostInfo[] listRecommended(int page, int pageSize) {
@@ -47,7 +68,7 @@ public class PostServiceImpl implements PostService {
     public List<PostInfo> searchPosts(String[] tagNames, @Nullable String hint) {
         if (tagNames.length != 0) {
             return Arrays.stream(tagNames)
-                    .map(it -> tagMapper.getTagInfoByName(it))
+                    .map(tagMapper::getTagInfoByName)
                     .filter(Objects::nonNull)
                     .flatMap(tag -> {
                         val tid = tag.getId();
@@ -67,8 +88,7 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public long addPost(long uid, PostInfo post) {
-        val blogger = new BloggerInfo();
-        blogger.setId(uid);
+        val blogger = bloggerMapper.getBloggerById(uid); // 后面要通知粉丝, 所以得查询出博主的名字
         post.setBlogger(blogger);
         postMapper.addPost(post);
         val pid = post.getId();
@@ -91,6 +111,11 @@ public class PostServiceImpl implements PostService {
                 tagMapper.addTag(tag);
             }
             postMapper.updatePostTags(pid, tags);
+        }
+        if (post.getPermission().isPublic()) {
+            for (val fan : subscribeMapper.getOnesFans(uid)) {
+                notifyFan(fan, post);
+            }
         }
         return pid;
     }
@@ -122,27 +147,19 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public PostInfo[] getBloggerAllPosts(long uid, int page, int pageSize) {
-        val postList = postMapper.getBloggerAllPostInfo(uid, page * pageSize, pageSize);
-        for (val it : postList) {
-            padPostInfo(it);
-        }
-        return postList;
+        return postMapper.getBloggerAllPostInfo(uid, page * pageSize, pageSize);
     }
 
     @Override
     public PostInfo[] getBloggerPublicPosts(long uid, int page, int pageSize) {
-        val postList = postMapper.getBloggerPublicPostInfo(uid, page, pageSize);
-        for (val it : postList) {
-            padPostInfo(it);
-        }
-        return postList;
+        return postMapper.getBloggerPublicPostInfo(uid, page, pageSize);
     }
 
     @Override
     public PostInfo getPostInfo(long pid) throws EntityNotFoundException {
         val post = postMapper.getPostInfo(pid);
         checkPostExists(post, pid);
-        return padPostInfo(post);
+        return post;
     }
 
     @Override
@@ -175,13 +192,20 @@ public class PostServiceImpl implements PostService {
         throw new EntityNotFoundException(String.format("Post not found with pid = %d", pid));
     }
 
-    private PostInfo padPostInfo(PostInfo post) {
-        val uid = post.getBlogger().getId();
-        val pid = post.getId();
-        String commentsUrl = String.format(POST_COMMENT_URL, uid, pid);
-        String detailUrl = String.format(POST_DETAIL_URL, uid, pid);
-        post.setComments(commentsUrl);
-        post.setDetail(detailUrl);
-        return post;
+    private void notifyFan(BloggerInfo fan, PostInfo post) {
+        try {
+            val mailReceiverAddr = fan.getEmail();
+
+            val message = new SimpleMailMessage();
+            message.setFrom(mailSenderAddr);
+            message.setTo(mailReceiverAddr);
+            message.setSubject(MAIL_TITLE);
+            message.setText(String.format(MAIL_CONTENT_PATTERN, post.getBlogger().getName(), post.getTitle()));
+
+            sender.send(message);
+        } catch (Exception e) {
+            e.printStackTrace(); // TODO NOT A GOOD PRACTICE.
+            // 不要吞掉异常, 如果有问题就应该让它直接暴露出来.
+        }
     }
 }

@@ -28,6 +28,8 @@ public interface PostMapper {
 
     TagInfo[] getPostTags(long pid);
 
+    int getPostUnreviewedCommentCount(long pid);
+
     PostInfo.PostPermission getPostPermission(long pid);
 
     PostInfo getPostInfo(long pid);

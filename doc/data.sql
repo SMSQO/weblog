@@ -49,12 +49,12 @@ INSERT INTO subscribe(publisher, fan)
 VALUES (2, 1);
 
 INSERT INTO comment(post_id, user_id, content, reply_to)
-VALUES (2, 1, 'dsads', NULL),
+VALUES (3, 1, 'dsads', NULL),
        (1, 3, '1!5!', 1),
        (1, 4, 'LTC!', 3),
        (1, 1, '理塘丁真', NULL),
-       (1, 3, '电子烟！', NULL),
-       (1, 4, '锐克5', NULL);
+       (4, 3, '电子烟！', NULL),
+       (4, 4, '锐克5', NULL);
 
 INSERT INTO blogger_liked_post(post_id, blogger_id)
 VALUES (1, 1),
