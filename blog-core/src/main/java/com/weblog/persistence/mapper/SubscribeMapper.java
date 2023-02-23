@@ -1,5 +1,6 @@
 package com.weblog.persistence.mapper;
 
+import com.weblog.business.entity.BloggerInfo;
 import org.apache.ibatis.annotations.Mapper;
 import org.springframework.stereotype.Repository;
 
@@ -15,5 +16,7 @@ public interface SubscribeMapper {
 
     boolean bothBloggerExists(long publisher, long fan);
 
-    int getOnesFans(long publisher);
+    int getOnesFansCount(long publisher);
+
+    BloggerInfo[] getOnesFans(long publisher);
 }

@@ -27,9 +27,17 @@
         WHERE id = #{publisher}
            OR id = #{fan}
     </select>
-    <select id="getOnesFans">
+    <select id="getOnesFansCount" resultType="int">
         SELECT COUNT(*)
         FROM subscribe
         WHERE publisher = #{publisher}
+    </select>
+    <select id="getOnesFans" resultType="com.weblog.business.entity.BloggerInfo">
+        <include refid="com.weblog.persistence.mapper.BloggerMapper.bloggerColumn"/>
+        WHERE id IN (
+        SELECT fan
+        FROM subscribe
+        WHERE publisher = #{publisher}
+        )
     </select>
 </mapper>

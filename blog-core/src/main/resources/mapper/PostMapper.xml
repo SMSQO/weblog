@@ -25,9 +25,11 @@
         <association property="permission" javaType="com.weblog.business.entity.PostInfo$PostPermission"
                      autoMapping="true"
                      column="id"
-                     select="com.weblog.persistence.mapper.PostMapper.getPostPermission">
-        </association>
-
+                     select="com.weblog.persistence.mapper.PostMapper.getPostPermission"/>
+        <association property="unreviewedCount"
+                     autoMapping="true"
+                     column="id"
+                     select="com.weblog.persistence.mapper.PostMapper.getPostUnreviewedCommentCount"/>
         <collection property="tags" column="id"
                     autoMapping="true"
                     javaType="java.util.List"
@@ -52,9 +54,9 @@
     </insert>
 
     <insert id="addBloggerLikePost" useGeneratedKeys="true">
-        INSERT INTO blogger_liked_post(post_id, blogger_id) VALUE (#{pid},#{bid})
+        INSERT INTO blogger_liked_post(post_id, blogger_id) VALUE (#{pid}, #{bid})
     </insert>
-    <!--suppress SqlResolve -->
+    <!--suppress SqlResolve, SqlIdentifier -->
     <select id="listRecommendPostInfo" resultMap="postInfo">
         <include refid="postInfoColumnP"/>
         ORDER BY p.likes DESC,
@@ -64,7 +66,7 @@
 
     <select id="getBloggerLikedPosts" resultMap="postInfo">
         <include refid="postInfoColumnP"/>
-        where id in (select pid from post_like where bid = #{bid})
+        WHERE id IN (SELECT pid FROM post_like WHERE bid = #{bid})
     </select>
 
 
@@ -150,23 +152,22 @@
         SELECT p.id      AS id,
                p.title   AS title,
                p.content AS content,
-               p.detail  AS detail,
+               CONCAT('/blog/', p.author, '/post/', p.id, '/detail')  AS detail,
                p.author  AS author,
                p.avatar  AS avatar,
                p.visits  AS visits,
-               p.likes   AS likes,
-               0         AS unreviewdCount
+               p.likes   AS likes
         FROM post p
     </sql>
 
     <select id="getBloggerAllPostInfo" resultMap="postInfo">
         <include refid="postInfoColumnP"/>
-        WHERE author = #{uid} limit #{count} offset #{start}
+        WHERE author = #{uid} LIMIT #{count} OFFSET #{start}
     </select>
     <select id="getBloggerPublicPostInfo" resultMap="postInfo">
         <include refid="postInfoColumnP"/>
         WHERE author = #{uid}
-        AND is_public = TRUE limit #{count} offset #{start}
+        AND is_public = TRUE LIMIT #{count} OFFSET #{start}
     </select>
     <select id="getPostTags" resultMap="tagInfo">
         SELECT tag.id AS id, name, owner, description
@@ -197,5 +198,12 @@
           AND `name` = #{name}
         ORDER BY ISNULL(owner) DESC
         LIMIT 1
+    </select>
+    <select id="getPostUnreviewedCommentCount" resultType="int">
+        SELECT COUNT(*)
+        FROM comment
+        WHERE reply_to IS NULL
+          AND (NOT review_passed OR review_passed IS NULL)
+          AND post_id = #{pid}
     </select>
 </mapper>
