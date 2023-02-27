@@ -11,7 +11,7 @@ public interface CommentMapper {
 
     CommentInfo[] getCommentOnlyUnreviewed(long id, int start, int count);
 
-    CommentInfo[] getComment(long id, int start, int count);
+    CommentInfo[] getComment(long pid, int start, int count);
 
     int addComment(long pid, long bid, String content, long replyTo);
 

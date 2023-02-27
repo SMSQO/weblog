@@ -12,7 +12,8 @@ public class CommentInfo {
     BloggerInfo author;
     String content;
 
-    String post;  // URL
+    String post;    // URL
+    String replied; // URL
     CommentInfo replyTo;
     boolean reviewPassed;
 }

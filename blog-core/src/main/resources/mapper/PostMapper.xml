@@ -149,14 +149,15 @@
     </delete>
 
     <sql id="postInfoColumnP">
-        SELECT p.id      AS id,
-               p.title   AS title,
-               p.content AS content,
+        SELECT p.id                                                   AS id,
+               p.title                                                AS title,
+               p.content                                              AS content,
                CONCAT('/blog/', p.author, '/post/', p.id, '/detail')  AS detail,
-               p.author  AS author,
-               p.avatar  AS avatar,
-               p.visits  AS visits,
-               p.likes   AS likes
+               p.author                                               AS author,
+               p.avatar                                               AS avatar,
+               p.visits                                               AS visits,
+               p.likes                                                AS likes,
+               CONCAT('/blog/', p.author, '/post/', p.id, '/comment') AS comments
         FROM post p
     </sql>
 

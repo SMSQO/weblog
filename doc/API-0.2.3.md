@@ -60,6 +60,7 @@ type CommentInfo = {
     author:         BloggerInfo
     content:        string
     post:           URL 
+    replied:		URL 
     replyTo:        CommentInfo | null
     reviewPassed:   boolean
 }
@@ -168,13 +169,13 @@ type Result<T> = { code: int } & ({content: T} | { reason: string })
 
 ## 4. 评论
 
-| 方法   | 接口                                        | 参数                                  | 返回          | 描述                                                         |
-| ------ | ------------------------------------------- | ------------------------------------- | ------------- | ------------------------------------------------------------ |
-| GET    | /blog/{bid}/post/{pid}/comment              | all: boolean, page: int, perpage: int | CommentInfo[] | 返回评论列表; all设置为false时只返回未审核的评论. 只能查出非回复的评论 |
-| POST   | /blog/{bid}/post/{pid}/comment              | comment: CommentInfo, reply: long     | -             | 添加评论, reply指对另一个ID为`reply`的评论的回复             |
-| DELETE | /blog/{bid}/post/{pid}/comment/{cid}        |                                       | -             | 删除评论                                                     |
-| GET    | /blog/{bid}/post/{pid}/comment/{cid}/reply  | page: int, perpage: int               | CommentInfo[] | 获取当前评论的所有回复                                       |
-| POST   | /blog/{bid}/post/{pid}/comment/{cid}/review | pass: boolean                         | -             | 审核评论                                                     |
+| 方法   | 接口                                         | 参数                                  | 返回          | 描述                                                         |
+| ------ | -------------------------------------------- | ------------------------------------- | ------------- | ------------------------------------------------------------ |
+| GET    | /blog/{bid}/post/{pid}/comment               | all: boolean, page: int, perpage: int | CommentInfo[] | 返回评论列表; all设置为false时只返回未审核的评论. 只能查出非回复的评论 |
+| POST   | /blog/{bid}/post/{pid}/comment               | comment: CommentInfo, reply: long     | -             | 添加评论, reply指对另一个ID为`reply`的评论的回复             |
+| DELETE | /blog/{bid}/post/{pid}/comment/{cid}         |                                       | -             | 删除评论                                                     |
+| GET    | /blog/{bid}/post/{pid}/comment/{cid}/replied | page: int, perpage: int               | CommentInfo[] | 获取当前评论的所有回复                                       |
+| POST   | /blog/{bid}/post/{pid}/comment/{cid}/review  | pass: boolean                         | -             | 审核评论                                                     |
 
 ## 5. 订阅
 

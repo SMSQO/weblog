@@ -28,17 +28,24 @@ public class CommentController {
     @GetMapping
     @NonNull
     public CommentInfo[] getCommentInfo(@PathVariable("bid") long bid, @PathVariable("pid") long pid, boolean all, int page, int perpage) throws PermissionDeniedException {
-        try {
-            permissionService.assertIsSelfBlogger(bid);
-        } catch (NotLoggedInException | PermissionDeniedException e) {
-            throw new PermissionDeniedException();
+        if (!all) {
+            try {
+                permissionService.assertIsSelfBlogger(bid);
+            } catch (NotLoggedInException | PermissionDeniedException e) {
+                throw new PermissionDeniedException();
+            }
         }
         return commentService.getCommentInfo(bid, pid, all, page, perpage);
     }
 
     @PostMapping
     @NonNull
-    public void addCommentInfo(@PathVariable("bid") long bid, @PathVariable("pid") long pid, CommentInfo comment, long reply) throws NotLoggedInException {
+    public void addCommentInfo(
+            @PathVariable("bid") long bid,
+            @PathVariable("pid") long pid,
+            @RequestParam("reply") long reply,
+            @RequestBody CommentInfo comment
+    ) throws NotLoggedInException {
         permissionService.getSelfBloggerId();
         commentService.addCommentInfo(bid, pid, comment, reply);
     }
@@ -49,14 +56,13 @@ public class CommentController {
         commentService.deleteCommentInfo(bid, pid, cid);
     }
 
-    @GetMapping("/{cid}/reply")
+    @GetMapping("/{cid}/replied")
     @NonNull
     public CommentInfo[] getAllReplyComment(@PathVariable("bid") long bid, @PathVariable("pid") long pid, @PathVariable("cid") long cid, int page, int perpage) {
         return commentService.getAllReplyComment(bid, pid, cid, page, perpage);
     }
 
     @PostMapping("/{cid}/review")
-    @NonNull
     public void reviewComment(@PathVariable("bid") long bid, @PathVariable("pid") long pid, @PathVariable("cid") long cid, boolean pass) throws PermissionDeniedException, EntityNotFoundException, NotLoggedInException {
         if (permissionService.getSelfBloggerId() != postService.getPostInfo(pid).getBlogger().getId()) {
             throw new PermissionDeniedException();

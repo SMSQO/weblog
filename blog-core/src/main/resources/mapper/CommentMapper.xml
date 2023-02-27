@@ -21,56 +21,48 @@
             <id property="id" column="reply_to"/>
         </association>
     </resultMap>
+    <sql id="commentColumnC">
+        SELECT c.id            AS id,
+               c.content       AS content,
+               c.review_passed AS review_passed,
+               c.user_id       AS user_id,
+               c.reply_to      AS reply_to,
+               CONCAT('/blog/', p.author, '/post/', p.id, '/detail')  AS post,
+               CONCAT('/blog/', p.author, '/post/', p.id, '/comment/', c.id, '/replied') AS replied
+        FROM comment c JOIN post p ON c.post_id = p.id
+    </sql>
     <select id="getCommentOnlyUnreviewed" resultMap="CommentInfo">
-        SELECT id,
-               content,
-               review_passed,
-               user_id,
-               reply_to
-        FROM comment
-        WHERE post_id = #{id} and reply_to is null and review_passed is null limit #{count} offset #{start}
+        <include refid="commentColumnC"/>
+        WHERE post_id = #{id} AND reply_to IS NULL AND review_passed IS NULL
+        LIMIT #{count} OFFSET #{start}
     </select>
     <select id="getCommentById" resultMap="CommentInfo">
-        SELECT id,
-               post_id,
-               reply_to,
-               content,
-               review_passed,
-               user_id
-        FROM comment
-        WHERE id = #{id}
+        <include refid="commentColumnC"/>
+        WHERE c.id = #{id}
     </select>
     <select id="getComment" resultMap="CommentInfo">
-        SELECT id,
-               content,
-               review_passed,
-               user_id
-        FROM comment
-        WHERE post_id = #{id} and reply_to is null limit #{count} offset #{start}
+        <include refid="commentColumnC"/>
+        WHERE post_id = #{pid}
+          AND (reply_to IS NULL OR reply_to = 0)
+        LIMIT #{count} OFFSET #{start}
     </select>
     <insert id="addComment">
         INSERT INTO comment(post_id, user_id, content, reply_to, review_passed)
-        VALUES (#{pid}, #{bid}, #{content}, #{reply_to}, null)
+        VALUES (#{pid}, #{bid}, #{content}, #{replyTo}, NULL)
     </insert>
     <select id="getReplyComment" resultMap="CommentInfo">
-        SELECT id,
-               content,
-               review_passed,
-               user_id,
-               reply_to,
-               post_id
-        FROM comment
+        <include refid="commentColumnC"/>
         WHERE reply_to = #{id}
     </select>
     <update id="reviewComment">
-        update comment
-        set review_passed = #{pass}
-        where id = #{id}
+        UPDATE comment
+        SET review_passed = #{pass}
+        WHERE id = #{id}
     </update>
     <delete id="deleteComment">
         DELETE
-        from comment
-        where id = #{cid}
+        FROM comment
+        WHERE id = #{cid}
     </delete>
 
 </mapper>
