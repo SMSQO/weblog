@@ -1,5 +1,6 @@
 package com.weblog.controller;
 
+import com.weblog.business.exception.EntityNotFoundException;
 import com.weblog.business.service.AttachmentService;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
@@ -25,7 +26,7 @@ public class FileController {
     @GetMapping("/file/blogger/*/attachment/{aid}")
     public String getAttachmentFile(
             @PathVariable("aid") long aid
-    ) {
+    ) throws EntityNotFoundException {
         val md5 = attachmentService.getAttachmentMd5sum(aid);
         return String.format("/static/files/%s", md5);
     }

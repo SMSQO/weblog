@@ -29,16 +29,20 @@
         WHERE id = #{aid}
     </delete>
 
+    <sql id="attachmentColumnA">
+        SELECT a.id, a.name, a.suffix, a.owner, a.filesize,
+               concat('/file/blogger/', a.owner, '/', a.md5sum) as url
+        FROM attachment AS a
+    </sql>
+
     <select id="getBloggerAttachment" resultMap="attachmentInfo">
-        select id, name, suffix, owner, filesize
-        FROM attachment
-        WHERE owner = #{uid}
+        <include refid="attachmentColumnA"/>
+        WHERE a.owner = #{uid}
         LIMIT #{from}, #{count}
     </select>
     <select id="getAttachmentInfo" resultMap="attachmentInfo">
-        SELECT id, name, suffix, owner, filesize
-        FROM attachment
-        WHERE id = #{aid}
+        <include refid="attachmentColumnA"/>
+        WHERE a.id = #{aid}
     </select>
     <select id="getAttachmentMd5" resultType="java.lang.String">
         SELECT md5sum

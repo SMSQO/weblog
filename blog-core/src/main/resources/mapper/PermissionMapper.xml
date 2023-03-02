@@ -6,23 +6,15 @@
 <mapper namespace="com.weblog.persistence.mapper.PermissionMapper">
 
     <select id="checkTagOwner" resultType="java.lang.Boolean">
-        SELECT owner = #{uid}
-        FROM tag
-        WHERE id = #{tid}
+        SELECT EXISTS(SELECT * FROM tag WHERE id = #{tid} AND owner = #{uid})
     </select>
     <select id="checkAttachmentOwner" resultType="java.lang.Boolean">
-        SELECT owner = #{uid}
-        FROM attachment
-        WHERE id = #{aid}
+        SELECT EXISTS(SELECT * FROM attachment WHERE id = #{aid} AND owner = #{uid})
     </select>
     <select id="checkPostAuthor" resultType="java.lang.Boolean">
-        SELECT author = #{uid}
-        FROM post
-        WHERE id = #{pid}
+        SELECT EXISTS(SELECT * FROM post WHERE id = #{pid} AND author = #{uid})
     </select>
     <select id="checkPostPublic" resultType="java.lang.Boolean">
-        SELECT is_public
-        FROM post
-        WHERE id = #{pid}
+        SELECT EXISTS(SELECT * FROM post WHERE id = #{pid} AND is_public)
     </select>
 </mapper>

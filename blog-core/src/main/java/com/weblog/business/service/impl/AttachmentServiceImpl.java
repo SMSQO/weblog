@@ -7,6 +7,7 @@ import com.weblog.business.service.AttachmentService;
 import com.weblog.persistence.mapper.AttachmentMapper;
 import lombok.val;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -75,8 +76,13 @@ public class AttachmentServiceImpl implements AttachmentService {
     }
 
     @Override
-    public String getAttachmentMd5sum(long aid) {
-        return attachmentMapper.getAttachmentMd5(aid);
+    @NonNull
+    public String getAttachmentMd5sum(long aid) throws EntityNotFoundException {
+        val md5 = attachmentMapper.getAttachmentMd5(aid);
+        if (md5 == null) {
+            throw new EntityNotFoundException(String.format("Attachment not found with aid = %d", aid));
+        }
+        return md5;
     }
 
     private String getFileMD5(MultipartFile file) throws IOException {
