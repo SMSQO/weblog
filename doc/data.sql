@@ -3,9 +3,9 @@ INSERT INTO blogger(`name`, contact, `password`, email, graduate)
 VALUES ('UmiKaiyo', '15000000001', 'password_1', 'test@163.com', 'XX大学'),
        ('HareSora', '15000000002', 'password_2', 'test@163.com', 'XX大学');
 
-INSERT INTO blog(`blogger_id`, visit_count, like_count)
-VALUES (1, 0, 0),
-       (2, 0, 0);
+# INSERT INTO blog(`blogger_id`, visit_count, like_count)
+# VALUES (1, 0, 0),
+#        (2, 0, 0);
 
 INSERT INTO tag(`name`, `owner`, `description`)
 VALUES ('java', NULL, 'desc-java'),
@@ -45,8 +45,8 @@ VALUES (1, 1),
        (5, 4),
        (6, 6);
 
-INSERT INTO subscribe(publisher, fan)
-VALUES (2, 1);
+# INSERT INTO subscribe(publisher, fan)
+# VALUES (2, 1);
 
 INSERT INTO comment(post_id, user_id, content, reply_to)
 VALUES (3, 1, 'dsads', NULL),

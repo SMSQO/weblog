@@ -1,7 +1,8 @@
 package com.weblog.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.weblog.business.entity.TagInfo;
+import com.weblog.business.entity.BloggerInfo;
+import com.weblog.business.entity.CommentInfo;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
@@ -34,15 +35,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @RunWith(SpringRunner.class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @WebAppConfiguration
-class TagControllerTest {
+class CommentControllerTest {
 
     private final MockMvc mockMvc;
-
     private final ObjectMapper mapper = new ObjectMapper();
 
-
     @Autowired
-    public TagControllerTest(WebApplicationContext wac) {
+    public CommentControllerTest(WebApplicationContext wac) {
         mockMvc = MockMvcBuilders
                 .webAppContextSetup(wac).build();
     }
@@ -50,6 +49,7 @@ class TagControllerTest {
     @SneakyThrows
     private MockHttpSession getNewLoggedInSession() {
         val sess = new MockHttpSession();
+        sess.setAttribute("blogger-id", 1l);
         mockMvc.perform(MockMvcRequestBuilders
                 .post("/login")
                 .param("contact", "15000000001")
@@ -60,10 +60,66 @@ class TagControllerTest {
     }
 
     @Test
-    void getBloggerTags() throws Exception {
+    void getCommentInfo() throws Exception {
         val sess = getNewLoggedInSession();
         val req = MockMvcRequestBuilders
-                .get("/blogger/2/tag")
+                .get("/blog/1/post/3/comment")
+                .session(sess)
+                .param("all", "false")
+                .param("page", "0")
+                .param("perpage", "10");
+        mockMvc.perform(req)
+                .andDo(it -> log.info(it.getResponse().getContentAsString(StandardCharsets.UTF_8))) // optional
+                .andExpectAll(
+                        status().isOk(),
+                        content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON),
+                        jsonPath("$.code").value("0")
+                );
+
+    }
+
+    @Test
+    void addCommentInfo() throws Exception {
+        val blog = new BloggerInfo(1, "UmiKaiyo", null, "", "15000000001", "test@test.com", "XX大学");
+        val comment = new CommentInfo(1, blog, "1！5！LTC！", null, null, null, true);
+        val commentStr = mapper.writeValueAsString(comment);
+        log.info(commentStr);
+        val sess = getNewLoggedInSession();
+        val req = MockMvcRequestBuilders
+                .post("/blog/1/post/3/comment")
+                .session(sess)
+                .content(commentStr)
+                .contentType(MediaType.APPLICATION_JSON)
+                .param("reply", "1");
+        mockMvc.perform(req)
+                .andDo(it -> log.info(it.getResponse().getContentAsString(StandardCharsets.UTF_8))) // optional
+                .andExpectAll(
+                        status().isOk(),
+                        content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON),
+                        jsonPath("$.code").value("0")
+                );
+    }
+
+    @Test
+    void deleteCommentInfo() throws Exception {
+        val sess = getNewLoggedInSession();
+        val req = MockMvcRequestBuilders
+                .delete("/blog/1/post/3/comment/1")
+                .session(sess);
+        mockMvc.perform(req)
+                .andDo(it -> log.info(it.getResponse().getContentAsString(StandardCharsets.UTF_8))) // optional
+                .andExpectAll(
+                        status().isOk(),
+                        content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON),
+                        jsonPath("$.code").value("0")
+                );
+    }
+
+    @Test
+    void getAllReplyComment() throws Exception {
+        val sess = getNewLoggedInSession();
+        val req = MockMvcRequestBuilders
+                .get("/blog/1/post/3/comment/1/replied")
                 .session(sess)
                 .param("page", "0")
                 .param("perpage", "10");
@@ -76,12 +132,14 @@ class TagControllerTest {
                 );
     }
 
+
     @Test
-    void getTagInfo() throws Exception {
+    void reviewComment() throws Exception {
         val sess = getNewLoggedInSession();
         val req = MockMvcRequestBuilders
-                .get("/blogger/2/tag/1")
-                .session(sess);
+                .post("/blog/1/post/3/comment/1/review")
+                .session(sess)
+                .param("pass", "true");
         mockMvc.perform(req)
                 .andDo(it -> log.info(it.getResponse().getContentAsString(StandardCharsets.UTF_8))) // optional
                 .andExpectAll(
@@ -91,60 +149,5 @@ class TagControllerTest {
                 );
     }
 
-    @Test
-    void addTag() throws Exception {
-        val tag = new TagInfo(7, "C#", null, "C#-descriptions");
-        val tagStr = mapper.writeValueAsString(tag);
-        log.info(tagStr);
 
-        val req = MockMvcRequestBuilders
-                .post("/blogger/1/tag")
-                .content(tagStr)
-                .contentType(MediaType.APPLICATION_JSON)
-                .session(getNewLoggedInSession());
-
-        mockMvc.perform(req)
-                .andDo(it -> log.info(it.getResponse().getContentAsString(StandardCharsets.UTF_8))) // optional
-                .andExpectAll(
-                        status().isOk(),
-                        content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON)
-                );
-    }
-
-    @Test
-    void updateTag() throws Exception {
-        val tag = new TagInfo(7, "C#", null, "C#-description");
-        val tagStr = mapper.writeValueAsString(tag);
-        log.info(tagStr);
-
-        val req = MockMvcRequestBuilders
-                .patch("/blogger/1/tag/7")
-                .content(tagStr)
-                .contentType(MediaType.APPLICATION_JSON)
-                .session(getNewLoggedInSession());
-
-        mockMvc.perform(req)
-                .andDo(it -> log.info(it.getResponse().getContentAsString(StandardCharsets.UTF_8))) // optional
-                .andExpectAll(
-                        status().isOk(),
-                        content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON),
-                        jsonPath("$.code").value("0")
-
-                );
-    }
-
-    @Test
-    void deleteTag() throws Exception {
-        val sess = getNewLoggedInSession();
-        val req = MockMvcRequestBuilders
-                .get("/blogger/2/tag/1")
-                .session(sess);
-        mockMvc.perform(req)
-                .andDo(it -> log.info(it.getResponse().getContentAsString(StandardCharsets.UTF_8))) // optional
-                .andExpectAll(
-                        status().isOk(),
-                        content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON),
-                        jsonPath("$.code").value("0")
-                );
-    }
 }
