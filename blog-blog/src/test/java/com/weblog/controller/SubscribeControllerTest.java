@@ -1,7 +1,5 @@
 package com.weblog.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.weblog.business.entity.TagInfo;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
@@ -34,15 +32,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @RunWith(SpringRunner.class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @WebAppConfiguration
-class TagControllerTest {
+class SubscribeControllerTest {
 
     private final MockMvc mockMvc;
 
-    private final ObjectMapper mapper = new ObjectMapper();
-
-
     @Autowired
-    public TagControllerTest(WebApplicationContext wac) {
+    public SubscribeControllerTest(WebApplicationContext wac) {
         mockMvc = MockMvcBuilders
                 .webAppContextSetup(wac).build();
     }
@@ -60,27 +55,10 @@ class TagControllerTest {
     }
 
     @Test
-    void getBloggerTags() throws Exception {
+    void subscribe() throws Exception {
         val sess = getNewLoggedInSession();
         val req = MockMvcRequestBuilders
-                .get("/blogger/2/tag")
-                .session(sess)
-                .param("page", "0")
-                .param("perpage", "10");
-        mockMvc.perform(req)
-                .andDo(it -> log.info(it.getResponse().getContentAsString(StandardCharsets.UTF_8))) // optional
-                .andExpectAll(
-                        status().isOk(),
-                        content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON),
-                        jsonPath("$.code").value("0")
-                );
-    }
-
-    @Test
-    void getTagInfo() throws Exception {
-        val sess = getNewLoggedInSession();
-        val req = MockMvcRequestBuilders
-                .get("/blogger/2/tag/1")
+                .post("/blogger/2/subscribe")
                 .session(sess);
         mockMvc.perform(req)
                 .andDo(it -> log.info(it.getResponse().getContentAsString(StandardCharsets.UTF_8))) // optional
@@ -89,55 +67,15 @@ class TagControllerTest {
                         content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON),
                         jsonPath("$.code").value("0")
                 );
+
     }
 
     @Test
-    void addTag() throws Exception {
-        val tag = new TagInfo(7, "C#", null, "C#-descriptions");
-        val tagStr = mapper.writeValueAsString(tag);
-        log.info(tagStr);
-
-        val req = MockMvcRequestBuilders
-                .post("/blogger/1/tag")
-                .content(tagStr)
-                .contentType(MediaType.APPLICATION_JSON)
-                .session(getNewLoggedInSession());
-
-        mockMvc.perform(req)
-                .andDo(it -> log.info(it.getResponse().getContentAsString(StandardCharsets.UTF_8))) // optional
-                .andExpectAll(
-                        status().isOk(),
-                        content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON)
-                );
-    }
-
-    @Test
-    void updateTag() throws Exception {
-        val tag = new TagInfo(7, "C#", null, "C#-description");
-        val tagStr = mapper.writeValueAsString(tag);
-        log.info(tagStr);
-
-        val req = MockMvcRequestBuilders
-                .patch("/blogger/1/tag/7")
-                .content(tagStr)
-                .contentType(MediaType.APPLICATION_JSON)
-                .session(getNewLoggedInSession());
-
-        mockMvc.perform(req)
-                .andDo(it -> log.info(it.getResponse().getContentAsString(StandardCharsets.UTF_8))) // optional
-                .andExpectAll(
-                        status().isOk(),
-                        content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON),
-                        jsonPath("$.code").value("0")
-
-                );
-    }
-
-    @Test
-    void deleteTag() throws Exception {
+    void unsubscribe() throws Exception {
+        subscribe();
         val sess = getNewLoggedInSession();
         val req = MockMvcRequestBuilders
-                .get("/blogger/2/tag/1")
+                .post("/blogger/2/unsubscribe")
                 .session(sess);
         mockMvc.perform(req)
                 .andDo(it -> log.info(it.getResponse().getContentAsString(StandardCharsets.UTF_8))) // optional
@@ -146,5 +84,25 @@ class TagControllerTest {
                         content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON),
                         jsonPath("$.code").value("0")
                 );
+
     }
+
+    @Test
+    void subscribed() throws Exception {
+        val sess = getNewLoggedInSession();
+        val req = MockMvcRequestBuilders
+                .get("/blogger/2/subscribed")
+                .session(sess);
+        mockMvc.perform(req)
+                .andDo(it -> log.info(it.getResponse().getContentAsString(StandardCharsets.UTF_8))) // optional
+                .andExpectAll(
+                        status().isOk(),
+                        content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON),
+                        jsonPath("$.code").value("0"),
+                        jsonPath("$.content").value("false")
+                );
+    }
+
+
+
 }
