@@ -9,7 +9,7 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/weblog?severTimezone=GMT%2B8@useSLL=true&allowMultiQueries=true
     username: root
-    password: 123456
+    password: 103533wyk
 
 mybatis:
   mapper-locations: classpath:/mapper/*.xml

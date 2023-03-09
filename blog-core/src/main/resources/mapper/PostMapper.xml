@@ -66,7 +66,8 @@
 
     <select id="getBloggerLikedPosts" resultMap="postInfo">
         <include refid="postInfoColumnP"/>
-        WHERE id IN (SELECT pid FROM post_like WHERE bid = #{bid})
+--         WHERE id IN (SELECT pid FROM post_like WHERE bid = #{bid})
+        WHERE id IN (SELECT post_id FROM blogger_liked_post WHERE blogger_id = #{bid})
     </select>
 
 

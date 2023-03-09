@@ -19,7 +19,7 @@ import java.io.IOException;
 
 import static com.weblog.business.ConstantUtil.*;
 
-@Slf4j
+//@Slf4j
 @Service
 public class BloggerServiceImpl implements BloggerService {
 
@@ -41,7 +41,7 @@ public class BloggerServiceImpl implements BloggerService {
         try {
             ret = bloggerMapper.updateBloggerInfo(info);
         } catch (DataIntegrityViolationException e) {
-            throw new SameContactException(String.format("Someone else has the same concat: %s", info.getContact()));
+            throw new SameContactException(String.format("Someone else has the same contact: %s", info.getContact()));
         }
         if (ret != 1) {
             throw new EntityNotFoundException(String.format("blogger with id %d not found", info.getId()));
@@ -57,7 +57,6 @@ public class BloggerServiceImpl implements BloggerService {
         }
         return info.getId();
     }
-
     @Override
     public String updateBloggerAvatar(long uid, MultipartFile file) throws IOException {
         val path = new File(AVATAR_REAL_PATH);
